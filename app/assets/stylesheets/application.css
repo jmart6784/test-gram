@@ -1,0 +1,220 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+/* css reset */
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  /* font-size: 100%;
+	font: inherit; */
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+}
+
+body {
+  background-color: rgb(19, 19, 19);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+th,
+tr,
+label,
+li,
+i,
+em,
+span,
+div {
+  color: white;
+}
+
+.more-content {
+  display: none;
+}
+
+.show-more {
+  color: rgb(172, 172, 172);
+  cursor: pointer;
+}
+
+.show-less {
+  display: none;
+  color: rgb(172, 172, 172);
+  cursor: pointer;
+}
+
+/* bottom links (Show More ajax and back to top button) */
+.bottom-links {
+  color: #004daa;
+  text-decoration: none;
+  background-color: black;
+  text-size-adjust: none;
+  font-size: 20px;
+  border-top: 0.5px solid white;
+  border-bottom: 0px;
+  border-left: 0px;
+  border-right: 0px;
+  padding: 10px 0 10px 0;
+  display: block;
+  text-align: center;
+  width: 100%;
+  margin-top: 70px;
+  outline: none;
+}
+
+/* Back to top btn */
+#top-link {
+  display: none;
+}
+
+@media only screen and (max-width: 1000px) {
+  body {
+    background-color: black;
+  }
+
+  .bottom-links {
+    font-size: 50px;
+    padding: 20px 0 20px 0;
+  }
+}

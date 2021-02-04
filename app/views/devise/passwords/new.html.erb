@@ -1,0 +1,44 @@
+<div id="forgot-password-container">
+
+  <div id="fp-div">
+
+    <div id="fp-inner-div">
+      <i class="fas fa-lock fp-lock-icon"></i>
+
+      <h3 class="forgot-password-title">Trouble Logging In?</h3>
+
+      <p class="forgot-password-p">
+        Enter your email and we'll send you a link to get back into your account.
+      </p>
+
+      <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "forgot-password-form" }) do |f| %>
+
+        <% if resource.errors.any? %>
+          <div id="signup-form-error-container">
+            <p id="post-form-flash-danger">Error</p>
+            <ul id="post-form-error-ul">
+              <% resource.errors.full_messages.each do |msg| %>
+                <li class="post-form-error-list-item"><span><%= msg %></span></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%= f.email_field :email, autocomplete: "email", placeholder: "Email", class: "forgot-passsword-email-field" %>
+
+        <%= f.submit "Send Login Link", id: "forgot-password-btn" %>
+      <% end %>
+
+      <p class="fp-or">OR</p>
+
+      <%= link_to "Create New Account", new_registration_path(resource_name), class: "fp-create-new-link" %>
+    </div>
+
+
+    <%= link_to "Back To Login", new_session_path(resource_name), class: "fp-login-link" %>
+  </div>
+
+</div>
+
+
+

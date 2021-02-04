@@ -1,0 +1,92 @@
+#saved-p-container {
+  width: 50%;
+  max-width: 950px;
+  margin: auto;
+  margin-top: 150px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  column-gap: 5px;
+  row-gap: 5px;
+  align-items: center;
+  justify-items: center;
+}
+
+#no-save-parent {
+  grid-column: 1 / -1;
+}
+
+#no-saved-posts-div {
+  margin: auto;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+}
+
+#saved-p-icon {
+  margin: auto;
+  font-size: 45px;
+  border: 5px solid white;
+  width: fit-content;
+  padding: 20px 30px 20px 30px;
+  border-radius: 100%;
+}
+
+#save-p-no-save-title {
+  font-weight: 100;
+  font-size: 50px;
+  text-align: center;
+  margin: 30px 0 30px 0;
+}
+
+#save-p-description {
+  font-size: 30px;
+  width: 50%;
+}
+
+@media only screen and (max-width: 1700px) {
+  #saved-p-container {
+    width: 65%;
+  }
+}
+
+@media only screen and (max-width: 1600px) {
+  #saved-p-container {
+    width: 70%;
+  }
+}
+
+@media only screen and (max-width: 1500px) {
+  #saved-p-container {
+    width: 75%;
+  }
+}
+
+@media only screen and (max-width: 1400px) {
+  #saved-p-container {
+    width: 80%;
+  }
+}
+
+@media only screen and (max-width: 1300px) {
+  #saved-p-container {
+    width: 85%;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  #saved-p-container {
+    width: 90%;
+  }
+}
+
+@media only screen and (max-width: 1100px) {
+  #saved-p-container {
+    width: 95%;
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  #saved-p-container {
+    width: 100%;
+  }
+}

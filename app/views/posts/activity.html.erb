@@ -1,0 +1,91 @@
+<% if @activity.length === 0 %>
+  <div id="post-activity-no-act-div">
+    <h1 id="no-act-title">No Activity Yet</h1>
+    <h3 id="no-act-description">See all your comment and likes here</h3>
+  </div>
+<% else %>
+  <div id="post-activity-container">
+    <% @activity[0, 13].each do |activity| %>
+      <% user = User.find(activity.user_id) %>
+
+      <% if activity.class.name === "Like" %>
+
+        <% if activity.post_id != nil %>
+          <% post = Post.find(activity.post_id) %>
+        <% elsif activity.video_post_id != nil %>
+          <% post = VideoPost.find(activity.video_post_id) %>
+        <% end %>
+
+        <div class="activity-like-container">
+          <%= link_to user do %>
+            <% if user.avatar.attached? %> 
+              <div class="post-activity-avatar background-image" style="background-image: url('<%= url_for(user.avatar) %>');"></div>
+            <% else %>
+              <div class="post-activity-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+            <% end %>
+          <% end %>
+
+          <p class="post-activity-text post-activity-desc">
+            <%= link_to user.username, user, class: "post-activity-un" %> <%= link_to "liked your photo", post, class: "post-activity-post-link" %>
+          </p>
+
+          <p class="post-activity-time post-activity-text">
+            <%= time_ago_in_words(activity.created_at.localtime) %> ago
+          </p>
+        </div>
+
+      <% elsif activity.class.name === "Comment" %>
+        
+        <% if activity.post_id != nil %>
+          <% post = Post.find(activity.post_id) %>
+        <% elsif activity.video_post_id != nil %>
+          <% post = VideoPost.find(activity.video_post_id) %>
+        <% end %>
+
+        <div class="activity-like-container">
+          <%= link_to user do %>
+            <% if user.avatar.attached? %> 
+              <div class="post-activity-avatar background-image" style="background-image: url('<%= url_for(user.avatar) %>');"></div>
+            <% else %>
+              <div class="post-activity-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+            <% end %>
+          <% end %>
+
+          <p class="post-activity-text post-activity-desc">
+            <%= link_to user.username, user, class: "post-activity-un" %> 
+            <%= link_to "commented: #{activity.body.length > 40 ? activity.body[0..40] + "..." : activity.body}", post, class: "post-activity-post-link" %> 
+          </p>
+
+          <p class="post-activity-time post-activity-text">
+            <%= time_ago_in_words(activity.created_at.localtime) %> ago
+          </p>
+        </div>
+      <% elsif activity.class.name === "Follow" %>
+        <div class="activity-like-container">
+          <%= link_to user do %>
+            <% if user.avatar.attached? %> 
+              <div class="post-activity-avatar background-image" style="background-image: url('<%= url_for(user.avatar) %>');"></div>
+            <% else %>
+              <div class="post-activity-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+            <% end %>
+          <% end %>
+
+          <p class="post-activity-text post-activity-desc">
+            <%= link_to user.username, user, class: "post-activity-un" %> <%= link_to "started following you", user, class: "post-activity-post-link" %>
+          </p>
+
+          <p class="post-activity-time post-activity-text">
+            <%= time_ago_in_words(activity.created_at.localtime) %> ago
+          </p>
+        </div>
+      <% end %>
+
+    <% end %>
+  </div>
+
+  <% if @activity.length > 13 %>
+    <%= link_to "More posts...", more_activity_path(next: 13), method: :post, remote: true, id: "more-link", class: "bottom-links" %>
+
+    <button id="top-link" class="bottom-links">Back to top</button>
+  <% end %>
+<% end %>

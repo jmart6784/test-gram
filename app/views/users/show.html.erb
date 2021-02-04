@@ -1,0 +1,171 @@
+<div id="user-sh-container">
+
+  <div id="user-sh-header-info">
+
+    <% if @user.avatar.attached? %> 
+      <div class="user-sh-avatar background-image" style="background-image: url('<%= url_for(@user.avatar) %>');"></div>
+    <% else %>
+      <div class="user-sh-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+    <% end %>
+
+    <div>
+
+      <div id="user-sh-info-1">
+        <p class="user-sh-username"><%= @user.username %></p>
+
+        <% if current_user != @user %>
+          <div id="user-sh-mnf-links">
+            <%= link_to "Message", conversations_path(sender_id: current_user.id, recipient_id: @user.id), method: "post", class: "user-sh-mnf-link" %>
+
+            <% @follow = Follow.find_by(user_id: current_user.id, following_id: @user.id) %>
+
+            <% follow_txt = @follow ? "Unfollow" : "Follow" %>
+
+            <%= link_to follow_txt, ajax_follows_update_follow_path(user_id: current_user.id, following_id: @user.id, html_id: "follow-#{@user.id}"), method: :put, remote: true, id: "follow-#{@user.id}", class: "user-sh-mnf-link" %>
+          </div>
+
+        <% else %>
+          <%= link_to edit_user_registration_path, id: "user-sh-edit-link" do %>
+            <span class="user-sh-edit-txt">Edit Profile</span>
+            <span class="user-sh-cog"><i class="fas fa-cog"></i></span>
+          <% end %>
+        <% end %>
+      </div>
+
+      <div id="user-sh-info-2">
+        <p class="user-sh-info-stats">
+          <strong><%= @user.posts.count + @user.video_posts.count %></strong> <%= "post".pluralize(@user.posts.count) %>
+        </p>
+
+        <% if @user.followers.count === 0 %>
+          <p class="user-sh-info-stats">
+            <strong><%= @user.followers.count %></strong> <%= "follower".pluralize(@user.followers.count) %>
+          </p>
+        <% else %>
+          <%= link_to followers_index_path(@user.id), class: "user-show-follow-index-link" do %>
+            <p class="user-sh-info-stats">
+              <strong><%= simple_number(@user.followers.count) %></strong> <%= "follower".pluralize(@user.followers.count) %>
+            </p>
+          <% end %>
+        <% end %>
+
+        <% if @user.following.count === 0 %>
+          <p class="user-sh-info-stats">
+            <strong><%= @user.following.count %></strong> following
+          </p>
+        <% else %>
+          <%= link_to following_index_path(@user.id), class: "user-show-follow-index-link" do %>
+            <p class="user-sh-info-stats">
+              <strong><%= simple_number(@user.following.count) %></strong> following
+            </p>
+          <% end %>
+        <% end %>
+
+      </div>
+
+      <h3 id="user-sh-fullname">
+        <%= "#{@user.first_name.downcase.capitalize} #{@user.last_name.downcase.capitalize}" %>
+      </h3>
+
+      <% if @user.bio === nil || @user.bio.strip != "" %>
+        <p id="user-sh-bio">
+          <%= @user.bio %>
+        </p>
+      <% end %>
+
+    </div>
+  </div>
+
+  <div id="user-sh-parent-info-div">
+    <div id="user-sh-post-header-links">
+
+      <% if current_user === @user %>
+        <%= link_to new_post_path, class: "user-sh-sp" do %>
+          <i class="far fa-plus-square user-sh-plus-icon"></i> New Post
+        <% end %>
+      <% end %>
+
+      <p class="user-sh-sp"><i class="fas fa-th user-sh-th"></i> Posts<p>
+
+      <% if current_user === @user %>
+        <%= link_to saved_posts_path, class: "user-sh-sp" do %>
+          <p><i class="far fa-bookmark user-sh-bookmark"></i> Saved</p>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @user_posts.length != 0 %>
+    
+    <div id="user-sh-post-grid">
+      <% @user_posts[0, 21].each do |post| %>
+
+        <% if post.class.method_defined? :image %>
+
+          <%= link_to post, class: "user-sh-post-link" do %>
+            <div class="user-sh-tile-div background-image" style="background-image: url('<%= url_for(post.image) %>');">
+
+              <div class="tinted-tile">
+                <p class="post-index-info">
+                  <i class="fas fa-heart us-icon"></i>
+                  <span class="us-icon-like">
+                    <%= post.likes.count %>
+                  </span>
+                  
+                  <i class="fas fa-comment us-icon"></i>
+                  <span>
+                    <%= post.comments.count %>
+                  </span>
+                </p>
+              </div>
+              
+            </div>
+          <% end %>
+          
+        <% elsif post.class.method_defined? :clip %>
+
+          <%= link_to post, class: "user-sh-post-link" do %>
+            <div class="user-sh-tile-div video-container">
+              <%= video_tag url_for(post.clip), class: "user-sh-video" %>
+
+              <div class="tinted-tile">
+                <p class="post-index-info">
+                  <i class="fas fa-heart us-icon"></i>
+                  <span class="us-icon-like">
+                    <%= post.likes.count %>
+                  </span>
+
+                  <i class="fas fa-comment us-icon"></i>
+                  <span>
+                    <%= post.comments.count %>
+                  </span>
+                </p>
+              </div>
+            </div>
+          <% end %>
+
+        <% end %>
+
+      <% end %>
+    </div>
+  <% else %>
+    <% if current_user === @user %>
+      <div class="user-show-no-posts">
+        <h1 class="user-show-no-posts-title-current-user">You haven't posted anything!</h1>
+        <%= link_to "Share", new_post_path, id: "user-show-add-post-current-user" %>
+      </div>
+
+    <% else %>
+      <div class="user-show-no-posts">
+        <i class="fas fa-camera user-show-no-posts-camera"></i>
+        <h2 class="user-show-no-posts-title-current-user">No Posts Yet</h2>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
+<% if @user_posts.length > 21 %>
+  <%= link_to "More posts...", more_user_show_posts_path(id: @user.id, next: 21), method: :post, remote: true, id: "more-link", class: "bottom-links" %>
+
+  <button id="top-link" class="bottom-links">Back to top</button>
+<% end %>

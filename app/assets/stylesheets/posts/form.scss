@@ -1,0 +1,42 @@
+#post-form-error-container {
+  border: 1px solid red;
+  width: 90%;
+  background-color: rgb(49, 0, 0);
+  padding: 10px;
+  margin: auto;
+  margin-top: 20px;
+}
+
+#post-form-flash-danger {
+  font-size: 15px;
+  font-weight: 900;
+  text-size-adjust: none;
+}
+
+#post-form-error-ul {
+  list-style-type: square;
+  list-style-position: inside;
+}
+
+.post-form-error-list-item {
+  font-size: 15px;
+  text-size-adjust: none;
+  margin-top: 10px;
+}
+
+@media only screen and (max-width: 1000px) {
+  #post-form-error-container {
+    border: 3px solid red;
+    padding: 20px;
+    margin-top: 40px;
+  }
+  
+  #post-form-flash-danger {
+    font-size: 30px;
+  }
+  
+  .post-form-error-list-item {
+    font-size: 30px;
+    margin-top: 20px;
+  }
+}

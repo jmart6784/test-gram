@@ -1,0 +1,72 @@
+var moreLink = document.getElementById("more-link");
+
+<% if @users.length === 0 %>
+  // Back to top link when there are no more posts to show
+  moreLink.style.display = "none";
+  document.getElementById("top-link").style.display = "block";
+<% else %>
+  // Make href request for next 10 posts
+  moreLink.href = "/more_user_index?next=<%= @next_start_point %>&search=<%= params[:search] %>&type=<%= params[:type] %>";
+<% end %>
+
+var parentDiv = document.getElementById("user-index-container");
+
+<% @users.each do |user| %>
+  <% next if current_user === user %>
+
+  // Create user container
+  var userDiv = document.createElement("div");
+  userDiv.classList.add("user-index-user-container");
+  parentDiv.appendChild(userDiv);
+
+  // Create div for username and avatar
+  var unDiv = document.createElement("div");
+  unDiv.classList.add("user-index-ava-un-div");
+  unDiv.onclick = () => {
+    location.href = "<%= url_for(user) %>";
+  };
+  userDiv.appendChild(unDiv);
+
+  // Create user avatar
+  var userAvatar = document.createElement("div");
+  userAvatar.classList.add("user-index-avatar");
+  userAvatar.classList.add("background-image");
+
+  <% if user.avatar.attached? %>
+    userAvatar.style.backgroundImage = "url('<%= url_for(user.avatar) %>')";
+  <% else %>
+    userAvatar.style.backgroundImage = "url('<%= "/assets/default_profile.jpg" %>')";
+  <% end %>
+  unDiv.appendChild(userAvatar);
+
+  // Create username div
+  var innerUnDiv = document.createElement("div");
+  unDiv.appendChild(innerUnDiv);
+
+  // Create username link
+  var unLink = document.createElement("a");
+  unLink.href = "<%= url_for(user) %>";
+  unLink.textContent = "<%= user.username %>";
+  unLink.classList.add("user-index-username");
+  innerUnDiv.appendChild(unLink);
+
+  // Create user full name
+  var uFullname = document.createElement("p");
+  uFullname.classList.add("user-index-fullname");
+  uFullname.textContent = "<%= "#{user.first_name} #{user.last_name}" %>";
+  innerUnDiv.appendChild(uFullname);
+
+  <% follow = Follow.find_by(user_id: current_user.id, following_id: user.id) %>
+  <% follow_txt = follow ? "Unfollow" : "Follow" %>
+
+  // Create Follow link
+  var followLink = document.createElement("a");
+  followLink.id = "<%= "follow-#{user.id}" %>";
+  followLink.classList.add("user-index-follow-link");
+  followLink.setAttribute("data-remote", "true");
+  followLink.setAttribute("data-method", "put");
+  followLink.textContent = "<%= follow_txt %>";
+  followLink.href = "<%= raw ajax_follows_update_follow_path(user_id: current_user.id, following_id: user.id, html_id: "follow-#{user.id}", id: 0) %>";
+  userDiv.appendChild(followLink);
+
+  <% end %>

@@ -1,0 +1,311 @@
+#edit-user-container {
+  border: 1px solid white;
+  background-color: black;
+  width: 45%;
+  max-width: 850px;
+  margin: auto;
+  margin-top: 90px;
+  padding: 40px 50px 40px 50px;
+}
+
+#edit-user-form-container {
+  width: 100%;
+}
+
+#edit-user-change-ava-container {
+  justify-self: flex-start;
+}
+
+#edit-user-avatar {
+  height: 40px;
+  width: 40px;
+  max-width: 40px;
+  border-radius: 100%;
+  justify-self: end;
+}
+
+.edit-user-user-title {
+  font-size: 23px;
+}
+
+#edit-bio-text-area {
+  height: 120px;
+  resize: none;
+}
+
+.edit-user-field {
+  display: grid;
+  align-items: center;
+  justify-items: end;
+  grid-template-columns: 1fr 1.5fr;
+  margin-bottom: 20px;
+  column-gap: 30px;
+  width: 100%;
+}
+
+.field_with_errors {
+  justify-self: start;
+  display: block;
+  width: 100%;
+}
+
+.edit-user-label {
+  font-size: 17px;
+  width: 100%;
+  text-align: end;
+  justify-self: flex-end;
+}
+
+.edit-user-input {
+  justify-self: start;
+  width: 100%;
+  background-color: black;
+  color: white;
+  padding: 5px 0 5px 10px;
+  padding-left: 10px;
+  font-size: 17px;
+  border: 1px solid rgb(255, 255, 255);
+}
+
+.edit-user-field-input-decoy {
+  cursor: pointer;
+  color: rgb(32, 167, 255);
+  font-size: 15px;
+}
+
+#primary-file-input {
+  display: none;
+}
+
+#edit-user-confirm-p1, #edit-user-confirm-p2 {
+  display: none;
+}
+
+.edit-user-actions {
+  width: 70%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  margin-bottom: 20px;
+}
+
+#edit-user-submit {
+  background-color: rgb(0, 40, 66);
+  color: white;
+  border: 0px;
+  padding: 10px;
+  font-size: 18px;
+  border-radius: 5px;
+  outline: none;
+}
+
+.edit-user-cancel-div {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  margin-bottom: 20px;
+}
+
+#edit-user-title {
+  font-size: 17px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  color: rgb(146, 0, 0);
+}
+
+#edit-user-title:hover {
+  text-decoration: underline;
+}
+
+#edit-user-delete {
+  padding: 10px;
+  color: rgb(146, 0, 0);
+  border: 1px solid rgb(146, 0, 0);
+  background-color: black;
+  border-radius: 5px;
+  outline: none;
+  font-size: 18px;
+  display: none;
+}
+
+#edit-user-delete:hover {
+  color: white;
+  background-color: rgb(146, 0, 0);
+}
+
+// Form error messages
+#edit-user-error-explanation {
+  background-color: rgb(39, 0, 0);
+  border: 1px solid red;
+  margin: auto;
+  margin-bottom: 10px;
+  padding: 10px;
+  width: 100%;
+}
+
+#edit-user-form-error-title {
+  font-size: 15px;
+  font-weight: 900;
+  text-size-adjust: none;
+}
+
+#edit-user-error-ul {
+  list-style-type: none;
+  list-style-position: inside;
+}
+
+.edit-user-error-message {
+  font-size: 15px;
+  margin-top: 10px;
+  text-size-adjust: none;
+}
+
+@media only screen and (max-width: 1700px) {
+  #edit-user-container {
+    width: 50%;
+  }
+}
+
+@media only screen and (max-width: 1600px) {
+  #edit-user-container {
+    width: 55%;
+  }
+}
+
+@media only screen and (max-width: 1500px) {
+  #edit-user-container {
+    width: 55%;
+  }
+}
+
+@media only screen and (max-width: 1400px) {
+  #edit-user-container {
+    width: 60%;
+  }
+}
+
+@media only screen and (max-width: 1300px) {
+  #edit-user-container {
+    width: 65%;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  #edit-user-container {
+    width: 70%;
+  }
+}
+
+@media only screen and (max-width: 1100px) {
+  #edit-user-container {
+    width: 75%;
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  #edit-user-container {
+    width: 100%;
+  }
+
+  #user-avatar-container {
+    flex-direction: row;
+  }
+
+  .edit-user-field {
+    justify-content: flex-start;
+    flex-direction: column;
+  }
+
+  #user-avatar-parent-div {
+    width: min-content;
+    margin-right: 30px;
+  }
+
+  #edit-user-avatar {
+    height: 100px;
+    width: 100px;
+    max-width: 100px;
+    float: left;
+  }
+
+  #edit-user-user-title {
+    font-size: 50px;
+  }
+
+  .edit-user-field-input-decoy {
+    font-size: 35px;
+  }
+
+  .edit-user-field {
+    column-gap: 50px;
+  }
+
+  #edit-bio-text-area {
+    height: 240px;
+    text-size-adjust: none;
+    border: 1px solid white;
+  }
+
+  .edit-user-label {
+    font-size: 40px;
+    margin-right: 0px;
+    margin-bottom: 20px;
+    width: 100%;
+    text-align: end;
+  }
+  
+  .edit-user-input {
+    width: 100%;
+    background-color: black;
+    color: white;
+    padding: 5px 0 5px 10px;
+    padding-left: 20px;
+    font-size: 40px;
+    margin-bottom: 20px;
+  }
+
+  .edit-user-actions {
+    width: 100%;
+  }
+
+  #edit-user-title {
+    font-size: 40px;
+    margin-top: 50px;
+    margin-bottom: 30px;
+  }
+
+  #edit-user-submit, #edit-user-delete {
+    padding: 10px 20px 10px 20px;
+    font-size: 50px;
+  }
+
+  #edit-user-delete {
+    border: 5px solid rgb(146, 0, 0);
+  }
+
+  #edit-user-delete:hover {
+    border: 5px solid rgb(146, 0, 0);
+    background-color: black;
+    color: rgb(146, 0, 0);
+  }
+
+  #edit-user-error-explanation {
+    border: 3px solid red;
+    margin: auto;
+    margin-bottom: 20px;
+    padding: 20px;
+  }
+  
+  #edit-user-form-error-title {
+    font-size: 35px;
+  }
+  
+  .edit-user-error-message {
+    font-size: 35px;
+    margin-top: 20px;
+  }
+}

@@ -1,0 +1,131 @@
+var moreLink = document.getElementById("more-link");
+
+<% if @sorted_by_likes.length === 0 %>
+  // Back to top link when there are no more posts to show
+  moreLink.style.display = "none";
+  document.getElementById("top-link").style.display = "block";
+<% else %>
+  // Make href request for next 10 posts
+  moreLink.href = "/more_index_posts?next=<%= @next_start_point %>";
+<% end %>
+
+var parentDiv = document.querySelector(".post-display-grid");
+
+<% @sorted_by_likes.each do |post| %>
+  <% if post.class.method_defined? :image %>
+    // Create post link
+    var postLink = document.createElement("a");
+    postLink.href = "<%= url_for(post) %>";
+    postLink.classList.add("pi-tile-link");
+    parentDiv.appendChild(postLink);
+
+    // Create post image div
+    var postDiv = document.createElement("div");
+    postDiv.classList.add("post-index-tile-div");
+    postDiv.classList.add("background-image");
+    postDiv.style.backgroundImage = "url('<%= url_for(post.image) %>')";
+    postLink.appendChild(postDiv);
+
+    // Create tinted tile Div
+    var tintedDiv = document.createElement("div");
+    tintedDiv.classList.add("tinted-tile");
+    postDiv.appendChild(tintedDiv);
+
+    // Create post info p tag
+    var pInfo = document.createElement("p");
+    pInfo.classList.add("post-index-info");
+    tintedDiv.appendChild(pInfo);
+
+    // Create heart icon
+    var pHeart = document.createElement("i");
+    pHeart.classList.add("fas");
+    pHeart.classList.add("fa-heart");
+    pInfo.appendChild(pHeart);
+
+    // Create span with like count
+    var pLikes = document.createElement("span");
+    pLikes.classList.add("pi-like-span");
+    pLikes.textContent = "<%= post.likes.count %>";
+    pInfo.appendChild(pLikes);
+
+    // Create Comment icon
+    var pComment = document.createElement("i");
+    pComment.classList.add("fas");
+    pComment.classList.add("fa-comment");
+    pInfo.appendChild(pComment);
+
+    // Create span with comment count
+    var pComCount = document.createElement("span");
+    pComCount.classList.add("pi-comment-span");
+    pComCount.textContent = "<%= post.comments.count %>";
+    pInfo.appendChild(pComCount);
+  <% elsif post.class.method_defined? :clip %>
+    // Create post link
+    var postLink = document.createElement("a");
+    postLink.href = "<%= url_for(post) %>";
+    postLink.classList.add("pi-tile-link");
+    parentDiv.appendChild(postLink);
+
+    // Create post video div
+    var postDiv = document.createElement("div");
+    postDiv.classList.add("post-index-tile-div");
+    postDiv.classList.add("video-container");
+    postLink.appendChild(postDiv);
+
+    // Create video tag
+    var postVideo = document.createElement("video");
+    postVideo.classList.add("post-index-content");
+    postVideo.classList.add("post-index-video");
+    postVideo.src = "<%= url_for(post.clip) %>";
+    postDiv.appendChild(postVideo);
+
+    // Create tinted tile Div
+    var tintedDiv = document.createElement("div");
+    tintedDiv.classList.add("tinted-tile");
+    postDiv.appendChild(tintedDiv);
+
+    // Create post info p tag
+    var pInfo = document.createElement("p");
+    pInfo.classList.add("post-index-info");
+    tintedDiv.appendChild(pInfo);
+
+    // Create heart icon
+    var pHeart = document.createElement("i");
+    pHeart.classList.add("fas");
+    pHeart.classList.add("fa-heart");
+    pInfo.appendChild(pHeart);
+
+    // Create span with like count
+    var pLikes = document.createElement("span");
+    pLikes.classList.add("pi-like-span");
+    pLikes.textContent = "<%= post.likes.count %>";
+    pInfo.appendChild(pLikes);
+
+    // Create Comment icon
+    var pComment = document.createElement("i");
+    pComment.classList.add("fas");
+    pComment.classList.add("fa-comment");
+    pInfo.appendChild(pComment);
+
+    // Create span with comment count
+    var pComCount = document.createElement("span");
+    pComCount.classList.add("pi-comment-span");
+    pComCount.textContent = "<%= post.comments.count %>";
+    pInfo.appendChild(pComCount);
+  <% end %>
+<% end %>
+
+// Add tinted tiles event listeners
+var tintedTiles = document.querySelectorAll(".tinted-tile");
+
+tintedTiles.forEach((tile) => {
+  tile.addEventListener("mouseenter", () => {
+    tile.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+    tile.childNodes[0].style.display = "block";
+  });
+
+  tile.addEventListener("mouseleave", () => {
+    tile.style.backgroundColor = "rgba(0, 0, 0, 0.0)";
+    tile.childNodes[0].style.display = "none";
+  });
+});

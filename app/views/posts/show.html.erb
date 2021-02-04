@@ -1,0 +1,377 @@
+<div id="show-post-container">
+  <div id="show-post-post">
+
+    <div id="mobile-show-post-header-user-info">
+      <div id="show-post-ava-un">
+        <% if @user.avatar.attached? %> 
+          <div class="post-show-avatar background-image" style="background-image: url('<%= url_for(@user.avatar) %>');"></div>
+        <% else %>
+          <div class="post-show-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+        <% end %>
+
+        <h3 id="post-show-op-un"><%= link_to @user.username, @user, class: "post-show-un-link" %></h3>
+      </div>
+
+      <% if current_user === @user %>
+        <div>
+          <%= link_to edit_post_path(@post), class: "post-show-pen-link mobile-header-del-link" do %>
+            <i class="fas fa-pen"></i>
+          <% end %>
+
+          <%= link_to @post, method: :delete, data: { confirm: 'Are you sure?' } do %>
+            <i class="far fa-trash-alt mobile-header-del-link"></i>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div id="post-show-split">
+      <div class="post-show-image background-image" style="background-image: url('<%= url_for(@post.image) %>');"></div>
+
+      <div id="show-post-right-container">
+        <div id="show-post-comments-container">
+
+          <div id="show-post-header-user-info">
+            <div id="show-post-ava-un">
+              <% if @user.avatar.attached? %> 
+                <div class="post-show-avatar background-image" style="background-image: url('<%= url_for(@user.avatar) %>');"></div>
+              <% else %>
+                <div class="post-show-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+              <% end %>
+
+              <h3 id="post-show-op-un"><%= link_to @user.username, @user, class: "post-show-un-link" %></h3>
+            </div>
+
+            <% if current_user === @user %>
+              <div>
+                <%= link_to edit_post_path(@post), class: "post-show-pen-link header-del-link" do %>
+                  <i class="fas fa-pen"></i>
+                <% end %>
+
+                <%= link_to @post, method: :delete, data: { confirm: 'Are you sure?' } do %>
+                  <i class="far fa-trash-alt header-del-link"></i>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+          <div id="all-comments-div" class="post-show-base-div-padding post-show-scrollable-comments">
+
+            <div id="show-post-caption-parent-div" class="post-show-split-avacom">
+              <% unless @post.caption === "" %>
+                <% if @user.avatar.attached? %> 
+                  <div class="post-show-comment-avatar background-image" style="background-image: url('<%= url_for(@user.avatar) %>');"></div>
+                <% else %>
+                  <div class="post-show-comment-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+                <% end %>
+
+                <p class="show-post-comment">
+                  <strong>
+                    <%= link_to @user.username, @user, class: "post-show-un-link" %>
+                  </strong> 
+                  <% if @post.caption.length > 150 %>
+                    <%= @post.caption[0..150] %><span class="show-more">...Show More</span><span class="more-content"><%= @post.caption[150..@post.caption.length] %></span><span class="show-less">...Show Less</span>
+                  <% else %>
+                    <%= @post.caption %>
+                  <% end %>
+                </p>
+              <% end %>
+            </div>
+
+            <div id="parent-comments-div">
+              <% @comments[0, 15].each do |comment| %>
+                <% user = User.find(comment.user_id) %>
+
+                <div class="post-show-split-avacom">
+
+                  <% if user.avatar.attached? %> 
+                    <div class="post-show-comment-avatar background-image" style="background-image: url('<%= url_for(user.avatar) %>');"></div>
+                  <% else %>
+                    <div class="post-show-comment-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+                  <% end %>
+
+                  <div id="post-show-comment-contents">
+                    <div id="show-post-first-row-comment-div">
+
+                      <p class="show-post-comment">
+                        <strong>
+                          <%= link_to user.username, user, class: "post-show-un-link" %>
+                        </strong> 
+                        <% if comment.body.length > 150 %>
+                          <%= comment.body[0..150] %><span class="show-more">...Show More</span><span class="more-content"><%= comment.body[150..comment.body.length] %></span><span class="show-less">...Show Less</span>
+                        <% else %>
+                          <%= comment.body %>
+                        <% end %>
+                      </p>
+
+                      <div id="show-post-comment-ld-div">
+
+                        <div>
+                          <% if current_user.id === comment.user_id %>
+                            <%= link_to post_comment_path(@post.id, comment.id), method: :delete, data: { confirm: 'Are you sure?' }, class: "comment-del-link" do %>
+                              <i class="far fa-trash-alt comment-del-link"></i>
+                            <% end %>
+                          <% end %>
+                        </div>
+
+                        <% comment_like_exists = Like.where(comment_id: comment.id, user_id: current_user.id) == [] ? "far fa-heart" : "fas fa-heart like-icon-col" %>
+
+                        <%= link_to ajax_likes_update_like_path(id: comment.id, type: "comment", html_id: "likeable_comment_id_#{comment.id}", html_count_id: "comment_like_count#{comment.id}"), method: :put, remote: true do %>
+                          <i id="<%= "likeable_comment_id_#{comment.id}" %>" class="<%= comment_like_exists %>"></i>
+                        <% end %>
+                      </div>
+                    </div>
+
+                    <div id="post-show-comment-stats-div">
+                      <p class="post-show-comment-stats p-show-time-stat"><%= "#{time_ago_in_words(comment.created_at.localtime)}"  %></p>
+
+                      <p id=<%= "comment_like_count#{comment.id}" %> class="post-show-comment-stats p-show-likes-stat">
+                        <%= "#{comment.likes.count} like".pluralize(comment.likes.count) %> 
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+            <% if @comments.length > 15 %>
+              <%= link_to "Show More...", more_comments_path(post_id: params[:id], next: 15, html_id: "parent-comments-div", type: "desktop", post_type: "image"), method: :post, remote: true, id: "more-comments", class: "com-bottom-links" %>
+
+              <button id="top-of-comments" class="com-bottom-links">Back to top</button>
+            <% end %>
+
+          </div>        
+        </div>
+
+        <div id="post-show-mid-post-info">
+          <div id="post-show-activity-links-div" class="pshow-pl">
+              <% like_exists = Like.where(post_id: @post.id, user_id: current_user.id) == [] ? "far fa-heart" : "fas fa-heart  like-icon-col" %>
+
+              <%= link_to ajax_likes_update_like_path(id: @post.id, type: "post", html_id: "likeable_id_#{@post.id}", html_count_id: "like_count#{@post.id}"), method: :put, remote: true, class: "post-show-activity-link" do %>
+                <i id="<%= "likeable_id_#{@post.id}" %>" class="<%= like_exists %>"></i>
+              <% end %>  
+
+              <div>
+                <% unless current_user === @user %>
+                  <% save_exists = SavedPost.where(user_id: current_user.id, post_id: @post.id) === [] ? "far fa-bookmark" : "fas fa-bookmark" %>
+
+                  <%= link_to ajax_saved_posts_saved_post_path(user_id: current_user.id, id: @post.id, type: "image", html_id: "saveable_post_id_#{@post.id}"), method: :put, remote: true, class: "post-show-activity-link" do %>
+                    <i id="<%= "saveable_post_id_#{@post.id}" %>" class="<%= save_exists %>"></i>
+                  <% end %>
+                <% end %>
+              </div>
+          </div>
+
+          <div>
+            <h3 id=<%= "like_count#{@post.id}" %> class="post-show-like-count pshow-pl">
+              <%= "#{@post.likes.count} like".pluralize(@post.likes.count) %>
+            </h3>
+
+            <p class="show-pdate following-gray-txt pshow-pl">
+              <%= "#{time_ago_in_words(@post.created_at.localtime)} ago"  %>
+            </p>
+          </div>
+        </div>
+
+        <div id="post-show-comment-form-container" >
+          <%= render "comments/form" %>
+        </div>
+      </div>
+
+      <div id="mobile-bottom">
+        <div id="mobile-b-row1" class="m-row-padding">
+          <div>
+            <% like_exists = Like.where(post_id: @post.id, user_id: current_user.id) == [] ? "far fa-heart" : "fas fa-heart  like-icon-col" %>
+
+            <%= link_to ajax_likes_update_like_path(id: @post.id, type: "post", html_id: "mobile_likeable_id_#{@post.id}", html_count_id: "mobile_like_count#{@post.id}"), method: :put, remote: true, class: "post-show-activity-link mobile-like" do %>
+              <i id="<%= "mobile_likeable_id_#{@post.id}" %>" class="<%= like_exists %>"></i>
+            <% end %>
+
+            <i id="post-show-mob-com-section" class="far fa-comment post-show-activity-link"></i>
+          </div>
+
+          <div>
+            <% unless current_user === @user %>
+              <% save_exists = SavedPost.where(user_id: current_user.id, post_id: @post.id) === [] ? "far fa-bookmark" : "fas fa-bookmark" %>
+
+              <%= link_to ajax_saved_posts_saved_post_path(user_id: current_user.id, id: @post.id, type: "image", html_id: "mobile_saveable_post_id_#{@post.id}"), method: :put, remote: true, class: "post-show-activity-link" do %>
+                <i id="<%= "mobile_saveable_post_id_#{@post.id}" %>" class="<%= save_exists %>"></i>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="m-row-padding">
+          <h3 id=<%= "mobile_like_count#{@post.id}" %> class="post-show-like-count">
+            <%= "#{@post.likes.count} like".pluralize(@post.likes.count) %>
+          </h3>
+        </div>
+
+        <div class="m-row-padding">
+          <% unless @post.caption === "" %>
+            <p class="mobile-show-post-base-fsize mobile-comment-p">
+              <strong>
+                <%= link_to @user.username, @user, class: "mobile-username-link" %>
+              </strong> 
+              <% if @post.caption.length > 150 %>
+                <%= @post.caption[0..150] %><span class="show-more">...Show More</span><span class="more-content"><%= @post.caption[150..@post.caption.length] %></span><span class="show-less">...Show Less</span>
+              <% else %>
+                <%= @post.caption %>
+              <% end %>
+            </p>
+          <% end %>
+        </div>
+        
+        <% unless @post.comments.count === 0 %>
+          <div class="m-row-padding">
+            <p id="view-all-mobile-comment-section" class="mobile-show-post-base-fsize following-gray-txt">
+              <%= "View all #{@post.comments.count} " + "comment".pluralize %>
+            </p>
+          </div>
+        <% end %>
+
+        <% @comments.slice(0, 3).each do |comment| %>
+          <div class="m-row-padding">
+            <% user_com = User.find(comment.user_id) %>
+
+            <div id="mobile-comment-container">
+              <p class="mobile-show-post-base-fsize mobile-comment-p">
+                <strong>
+                  <%= link_to user_com.username, user_com, class: "mobile-username-link" %>
+                </strong>
+                <% if comment.body.length > 150 %>
+                  <%= comment.body[0..150] %><span class="show-more">...Show More</span><span class="more-content"><%= comment.body[150..comment.body.length] %></span><span class="show-less">...Show Less</span>
+                <% else %>
+                  <%= comment.body %>
+                <% end %>
+              </p>
+
+              <% comment_like_exists = Like.where(comment_id: comment.id, user_id: current_user.id) == [] ? "far fa-heart" : "fas fa-heart like-icon-col" %>
+
+              <%= link_to ajax_likes_update_like_path(id: comment.id, type: "comment", html_id: "mobile_likeable_comment_id_#{comment.id}", html_count_id: "mobile_comment_like_count#{comment.id}"), method: :put, remote: true, class: "mobile-show-post-base-fsize" do %>
+                <i id="<%= "mobile_likeable_comment_id_#{comment.id}" %>" class="<%= comment_like_exists %>"></i>
+              <% end %>
+            </div>
+          </div>
+
+        <% end %>
+
+        <div class="m-row-padding">
+          <p class="show-pdate following-gray-txt">
+            <%= "#{time_ago_in_words(@post.created_at.localtime)} ago" %>
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div id="mobile-full-comment-container">
+    <div id="mobile-static-comment-header">
+
+      <div id="mob-com-header-row1">
+        <i id="mob-com-close" class="fas fa-chevron-left"></i>
+        <h1 id="mob-com-title">Comments</h1>
+        <div></div>
+      </div>
+
+      <div id="mob-com-header-row2">
+        <% if current_user.avatar.attached? %> 
+          <div class="mobile-avatar background-image" style="background-image: url('<%= url_for(current_user.avatar) %>');"></div>
+        <% else %>
+          <div class="mobile-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+        <% end %>
+
+        <%= form_for [ @post, @comment ], html: {remote: true, id: "mob-com-form"} do |f| %>
+          <%= f.text_field :body, placeholder: "Add a comment...", id: "comment-text-field2", required: true, maxlength: 2200 %><br>
+
+          <%= f.hidden_field :html_text_id, value: "comment-text-field2" %>
+          <%= f.hidden_field :parent_div_id, value: "mob-com-parent" %>
+          <%= f.submit "Post", id: "mob-com-btn" %>
+        <% end %>
+      </div>
+
+    </div>
+
+    <div id="scrollable-mobile-comments">
+      <div class="mobile-caption-div mobile-full-com-container">
+        <% if @user.avatar.attached? %> 
+          <div class="mobile-avatar background-image" style="background-image: url('<%= url_for(@user.avatar) %>');"></div>
+        <% else %>
+          <div class="mobile-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+        <% end %>
+
+        <p class="full-mob-com-body full-com-fsize">
+          <strong><%= link_to @user.username, @user, class: "mobile-username-link" %></strong>
+          <% if @post.caption.length > 150 %>
+            <%= @post.caption[0..150] %><span class="show-more">...Show More</span><span class="more-content"><%= @post.caption[150..@post.caption.length] %></span><span class="show-less">...Show Less</span>
+          <% else %>
+            <%= @post.caption %>
+          <% end %>
+        </p>
+
+        <div></div>
+      </div> 
+
+      <div id="mob-com-parent">
+        <% @comments[0, 15].each do |comment| %>
+          <% user_com = User.find(comment.user_id) %>
+          
+          <div class="mobile-full-com-container">
+            <% if user_com.avatar.attached? %> 
+              <div class="mobile-avatar background-image" style="background-image: url('<%= url_for(user_com.avatar) %>');"></div>
+            <% else %>
+              <div class="mobile-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+            <% end %>
+
+            <div>
+              <p class="full-mob-com-body full-com-fsize">
+                <strong><%= link_to user_com.username, user_com, class: "mobile-username-link" %></strong> 
+                <% if comment.body.length > 150 %>
+                  <%= comment.body[0..150] %><span class="show-more">...Show More</span><span class="more-content"><%= comment.body[150..comment.body.length] %></span><span class="show-less">...Show Less</span>
+                <% else %>
+                  <%= comment.body %>
+                <% end %>
+              </p>
+              
+              <div class="mob-com-stats-parent-container">
+                <p class="mob-com-stat-time mob-com-stat">
+                  <%= "#{time_ago_in_words(comment.created_at.localtime)}"  %>
+                </p>
+
+                <p id=<%= "mob_full_comment_like_count#{comment.id}" %> class="mob-com-stat">
+                  <%= "#{comment.likes.count} like".pluralize(comment.likes.count) %> 
+                </p>
+              </div>
+            </div>
+
+            <div id="mob-comm-links-div">
+              <div>
+                <% if current_user.id === comment.user_id %>
+                  <%= link_to post_comment_path(@post.id, comment.id), method: :delete, data: { confirm: 'Are you sure?' }, class: "comment-del-link" do %>
+                    <i class="far fa-trash-alt mobile-comment-activity-link"></i>
+                  <% end %>
+                <% end %>
+              </div>
+
+              <% comment_like_exists = Like.where(comment_id: comment.id, user_id: current_user.id) == [] ? "far fa-heart" : "fas fa-heart like-icon-col" %>
+
+              <%= link_to ajax_likes_update_like_path(id: comment.id, type: "comment", html_id: "mob_full_likeable_comment_id_#{comment.id}", html_count_id: "mob_full_comment_like_count#{comment.id}"), method: :put, remote: true, class: "mobile-comment-activity-link" do %>
+                <i id="<%= "mob_full_likeable_comment_id_#{comment.id}" %>" class="<%= comment_like_exists %>"></i>
+              <% end %>
+            </div>
+          </div>
+
+        <% end %>
+      </div>
+
+      <% if @comments.length > 15 %>
+        <%= link_to "Show More...", more_comments_path(post_id: params[:id], next: 15, html_id: "mob-com-parent", type: "mobile", post_type: "image"), method: :post, remote: true, id: "more-comments2", class: "com-bottom-links2" %>
+
+        <button id="top-of-comments2" class="com-bottom-links2">Back to top</button>
+      <% end %>
+
+    </div>
+  </div>
+</div>

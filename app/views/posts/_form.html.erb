@@ -1,0 +1,28 @@
+<div>
+  <% if @post.errors.any? %>
+    <div id="post-form-error-container">
+      <p id="post-form-flash-danger"><%= flash[:danger] %></p>
+      <ul id="post-form-error-ul">
+        <% @post.errors.full_messages.each do |msg| %>
+          <li class="post-form-error-list-item"><span><%= msg %></span></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+
+  <%= form_with model: @post, local: true, class: "post-new-form" do |f| %>
+    <% if @post.image.attached? && @post.image.content_type.in?(%(image/jpeg image/png)) %>
+      <div class="post-edit-image background-image" style="background-image: url('<%= url_for(@post.image) %>');"></div>
+    <% end %>
+
+    <div>
+      <%= f.file_field :image, id: "primary-file-input" %>
+      <p id="choose-file" class="post-new-choose-image">Choose Image...</p>
+    </div>
+
+    <%= f.text_area :caption, placeholder: "Write a caption...", id: "post-new-text-area" %>
+
+    <%= f.submit "Share", id: "new-post-submit-btn" %>
+  <% end %>
+</div>

@@ -1,0 +1,47 @@
+<div id="signup-container">
+
+  <div id="su-inner-div">
+
+    <div id="su-div">
+      <%= image_tag "/assets/logo.png", id: "login-logo" %>
+
+      <p id="signup-p">Sign up to see photos and videos from your friends.</p>
+
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: {class: "signup-form"}) do |f| %>
+
+        <% if resource.errors.any? %>
+          <div id="signup-form-error-container">
+            <p id="post-form-flash-danger">Sign up failed</p>
+            <ul id="post-form-error-ul">
+              <% resource.errors.full_messages.each do |msg| %>
+                <li class="post-form-error-list-item"><span><%= msg %></span></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%= f.text_field :first_name, placeholder: "First Name", class: "sign-up-field" %>
+
+        <%= f.text_field :last_name, placeholder: "Last Name", class: "sign-up-field" %>
+
+        <%= f.text_field :username, placeholder: "Username", class: "sign-up-field" %>
+
+        <%= f.email_field :email, autocomplete: "email", placeholder: "Email", class: "sign-up-field" %>
+
+        <%= f.password_field :password, autocomplete: "new-password", placeholder: "Password (#{@minimum_password_length} characters minimum)", class: "sign-up-field" %>
+
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "Confirm Password", class: "sign-up-field" %>
+
+        <%= f.submit "Sign up", id: "signup-btn" %>
+      <% end %>
+    </div>
+
+    <p id="sign-up-link-p">
+      Have an account? <%= link_to "Log in", new_session_path(resource_name), class: "su-login-link" %>
+    </p>
+  </div>
+
+
+</div>
+
+

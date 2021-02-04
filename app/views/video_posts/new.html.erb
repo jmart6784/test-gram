@@ -1,0 +1,17 @@
+<div id="new-post-container">
+
+  <div id="np-inner-div">
+    <div id="post-type-links-div">
+      <%= link_to new_post_path, class: "new-post-link-to-video" do %>
+        <p><i class="fas fa-image"></i> Image</p>
+      <% end %>
+
+      <p class="new-post-fp"><i class="fas fa-video"></i> Video</p>
+    </div>
+    
+
+    <%= render "form" %>
+  </div>
+
+  <%= link_to "Back", current_user, id: "new-post-back-link" %>
+</div>

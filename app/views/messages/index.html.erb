@@ -1,0 +1,83 @@
+<div id="messages-container">
+  <% sender = User.find(@conversation.sender_id) %>
+  <% recipient = User.find(@conversation.recipient_id) %>
+
+  <div id="messages-header">
+    <% other_user = current_user === sender ? recipient : sender %>
+
+    <div>
+      <%= link_to conversations_path, class: "messages-back-link" do %>
+        <i class="fas fa-chevron-left"></i>
+      <% end %>
+
+      <%= link_to other_user.username, other_user, class: "messages-header-username" %>
+    </div>
+
+    <%= link_to @conversation, method: :delete, data: { confirm: 'Are you sure?' } do %>
+      <i class="far fa-trash-alt messages-conversation-del-link"></i>
+    <% end %>
+  </div>
+
+  <div id="messages-parent-div">
+    <% if @over_ten %>
+      <%= link_to "Show All", '?m=all', class: "top-message-links" %>
+    <% end %>
+
+    <% @messages.each do |message| %>
+      <% user = User.find(message.user_id) %>
+
+      <% if current_user === user %>
+        <div class="current-user-msg-container">
+          <p class="message-date">
+            <%= message.created_at.localtime.strftime("%B %e, %Y  %l:%M %p") %>
+          </p>
+
+          <div class="current-user-message-body-div">
+            <%= link_to conversation_message_path(@conversation.id, message.id), method: :delete, data: { confirm: 'Are you sure?' }, class: "msg-delete-link" do %>
+              <i class="far fa-trash-alt"></i>
+            <% end %>
+
+            <p class="current-user-message-body">
+              <% if message.body.length > 200 %>
+                <%= message.body[0..200] %><span class="show-more">...Show More</span><span class="more-content"><%= message.body[200..message.body.length] %></span><span class="show-less">...Show Less</span>
+              <% else %>
+                <%= message.body %>
+              <% end %>
+            </p>
+          </div>
+        </div>
+      <% else %>
+
+        <div class="other-user-message-container">
+          <%= link_to user do %>
+            <% if user.avatar.attached? %> 
+              <div class="message-avatar background-image" style="background-image: url('<%= url_for(user.avatar) %>');"></div>
+            <% else %>
+              <div class="message-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+            <% end %>
+          <% end %>
+
+          <div>
+            <p class="other-user-username"><%= user.username %></p>
+            <p class="other-user-message-body">
+              <% if message.body.length > 150 %>
+                <%= message.body[0..150] %><span class="show-more">...Show More</span><span class="more-content"><%= message.body[150..message.body.length] %></span><span class="show-less">...Show Less</span>
+              <% else %>
+                <%= message.body %>
+              <% end %>
+            </p>
+          </div>
+        </div>
+
+      <% end %>
+    <% end %>
+  </div>
+
+  <div id="message-form-container">
+    <%= form_for [@conversation, @message], html: {class: "message-form"} do |f| %>
+      <%= f.text_area :body, placeholder: "Message...", class: "message-text-area", required: true, minlength: "1", maxlength: "2200" %>
+      <%= f.submit "Send", class: "message-submit" %>
+    <% end %>
+  </div>
+
+</div>

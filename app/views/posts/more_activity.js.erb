@@ -1,0 +1,182 @@
+var moreLink = document.getElementById("more-link");
+
+<% if @activity.length === 0 %>
+  // Back to top link when there are no more posts to show
+  moreLink.style.display = "none";
+  document.getElementById("top-link").style.display = "block";
+<% else %>
+  // Make href request for next 10 posts
+  moreLink.href = "/more_activity?next=<%= @next_start_point %>";
+<% end %>
+
+var parentDiv = document.getElementById("post-activity-container");
+
+<% @activity.each do |activity| %>
+  <% user = User.find(activity.user_id) %>
+
+  <% if activity.class.name === "Like" %>
+    <% if activity.post_id != nil %>
+      <% post = Post.find(activity.post_id) %>
+    <% elsif activity.video_post_id != nil %>
+      <% post = VideoPost.find(activity.video_post_id) %>
+    <% end %>
+
+    // Create div for activity
+    var activityDiv = document.createElement("div");
+    activityDiv.classList.add("activity-like-container");
+    parentDiv.appendChild(activityDiv);
+
+    // Create link for user
+    var userLink = document.createElement("a");
+    userLink.href = "<%= url_for(user) %>";
+    activityDiv.appendChild(userLink);
+
+    // Create avatar div
+    var avatar = document.createElement("div");
+    avatar.classList.add("post-activity-avatar");
+    avatar.classList.add("background-image");
+
+    <% if user.avatar.attached? %>
+      avatar.style.backgroundImage = "url('<%= url_for(user.avatar) %>')";
+    <% else %>
+      avatar.style.backgroundImage = "url('/assets/default_profile.jpg')";
+    <% end %>
+
+    userLink.appendChild(avatar);
+
+    // Create p tag for username and activity description
+    var activityP = document.createElement("p");
+    activityP.classList.add("post-activity-text");
+    activityP.classList.add("post-activity-desc");
+    activityDiv.appendChild(activityP);
+
+    // Create link to user
+    var unLink = document.createElement("a");
+    unLink.href = "<%= url_for(user) %>";
+    unLink.textContent = "<%= user.username %> ";
+    unLink.classList.add("post-activity-un");
+    activityP.appendChild(unLink);
+
+    // Create activity description/link to post
+    var pLink = document.createElement("a");
+    pLink.classList.add("post-activity-post-link");
+    pLink.href = "<%= url_for(post) %>";
+    pLink.textContent = "liked your photo";
+    activityP.appendChild(pLink);
+
+    // Create p tag for time
+    var actTime = document.createElement("p");
+    actTime.classList.add("post-activity-time");
+    actTime.classList.add("post-activity-text");
+    actTime.textContent = "<%= time_ago_in_words(activity.created_at.localtime) %>";
+    activityDiv.appendChild(actTime);
+  <% elsif activity.class.name === "Comment" %>
+
+    <% if activity.post_id != nil %>
+      <% post = Post.find(activity.post_id) %>
+    <% elsif activity.video_post_id != nil %>
+      <% post = VideoPost.find(activity.video_post_id) %>
+    <% end %>
+  
+    // Create div for activity
+    var activityDiv = document.createElement("div");
+    activityDiv.classList.add("activity-like-container");
+    parentDiv.appendChild(activityDiv);
+
+    // Create link for user
+    var userLink = document.createElement("a");
+    userLink.href = "<%= url_for(user) %>";
+    activityDiv.appendChild(userLink);
+
+    // Create avatar div
+    var avatar = document.createElement("div");
+    avatar.classList.add("post-activity-avatar");
+    avatar.classList.add("background-image");
+
+    <% if user.avatar.attached? %>
+      avatar.style.backgroundImage = "url('<%= url_for(user.avatar) %>')";
+    <% else %>
+      avatar.style.backgroundImage = "url('/assets/default_profile.jpg')";
+    <% end %>
+
+    userLink.appendChild(avatar);
+
+    // Create p tag for username and activity description
+    var activityP = document.createElement("p");
+    activityP.classList.add("post-activity-text");
+    activityP.classList.add("post-activity-desc");
+    activityDiv.appendChild(activityP);
+
+    // Create link to user
+    var unLink = document.createElement("a");
+    unLink.href = "<%= url_for(user) %>";
+    unLink.textContent = "<%= user.username %> ";
+    unLink.classList.add("post-activity-un");
+    activityP.appendChild(unLink);
+
+    // Create activity description/link to post
+    var pLink = document.createElement("a");
+    pLink.classList.add("post-activity-post-link");
+    pLink.href = "<%= url_for(post) %>";
+    pLink.textContent = "<%= "commented: #{activity.body.length > 40 ? activity.body[0..40] + "..." : activity.body}" %>";
+    activityP.appendChild(pLink);
+
+    // Create p tag for time
+    var actTime = document.createElement("p");
+    actTime.classList.add("post-activity-time");
+    actTime.classList.add("post-activity-text");
+    actTime.textContent = "<%= time_ago_in_words(activity.created_at.localtime) %>";
+    activityDiv.appendChild(actTime);
+  <% elsif activity.class.name === "Follow" %>
+
+    // Create div for activity
+    var activityDiv = document.createElement("div");
+    activityDiv.classList.add("activity-like-container");
+    parentDiv.appendChild(activityDiv);
+
+    // Create link for user
+    var userLink = document.createElement("a");
+    userLink.href = "<%= url_for(user) %>";
+    activityDiv.appendChild(userLink);
+
+    // Create avatar div
+    var avatar = document.createElement("div");
+    avatar.classList.add("post-activity-avatar");
+    avatar.classList.add("background-image");
+
+    <% if user.avatar.attached? %>
+      avatar.style.backgroundImage = "url('<%= url_for(user.avatar) %>')";
+    <% else %>
+      avatar.style.backgroundImage = "url('/assets/default_profile.jpg')";
+    <% end %>
+
+    userLink.appendChild(avatar);
+
+    // Create p tag for username and activity description
+    var activityP = document.createElement("p");
+    activityP.classList.add("post-activity-text");
+    activityP.classList.add("post-activity-desc");
+    activityDiv.appendChild(activityP);
+
+    // Create link to user
+    var unLink = document.createElement("a");
+    unLink.href = "<%= url_for(user) %>";
+    unLink.textContent = "<%= user.username %> ";
+    unLink.classList.add("post-activity-un");
+    activityP.appendChild(unLink);
+
+    // Create activity description/link to post
+    var pLink = document.createElement("a");
+    pLink.classList.add("post-activity-post-link");
+    pLink.href = "<%= url_for(post) %>";
+    pLink.textContent = "started following you";
+    activityP.appendChild(pLink);
+
+    // Create p tag for time
+    var actTime = document.createElement("p");
+    actTime.classList.add("post-activity-time");
+    actTime.classList.add("post-activity-text");
+    actTime.textContent = "<%= time_ago_in_words(activity.created_at.localtime) %>";
+    activityDiv.appendChild(actTime);
+  <% end %>
+<% end %>

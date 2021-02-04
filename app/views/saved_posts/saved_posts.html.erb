@@ -1,0 +1,65 @@
+<div id="saved-p-container">
+  <% if @saved_posts.count === 0 %>
+    <div id="no-save-parent">
+      <div id="no-saved-posts-div">
+        <h1 id="saved-p-icon"><i class="far fa-bookmark"></i></h1>
+        <h1 id="save-p-no-save-title">Save</h1>
+        <p id="save-p-description">
+          Save photos and videos that you want to see again. No one is notified, and only you can see what you've saved.
+        </p> 
+      </div>
+    </div>
+  <% else %>
+    <% @saved_posts[0, 24].each do |saved_post| %>
+      <% if saved_post.post_id != nil %>
+        <% post = Post.find(saved_post.post_id) %>
+
+        <%= link_to post, class: "pi-tile-link" do %>
+          <div class="post-index-tile-div background-image" style="background-image: url('<%= url_for(post.image) %>');">
+            <div class="tinted-tile">
+              <p class="post-index-info">
+                <i class="fas fa-heart"></i>
+                <span class="pi-like-span">
+                  <%= post.likes.count %>
+                </span>
+                
+                <i class="fas fa-comment"></i>
+                <span class="pi-comment-span">
+                  <%= post.comments.count %>
+                </span>
+              </p>
+            </div>
+          </div>
+        <% end %>
+
+      <% elsif saved_post.video_post_id %>
+        <% post = VideoPost.find(saved_post.video_post_id) %>
+        
+        <%= link_to post, class: "pi-tile-link" do %>
+          <div class="post-index-tile-div video-container">
+            <%= video_tag url_for(post.clip), class: "post-index-content post-index-video" %>
+            <div class="tinted-tile">
+              <p class="post-index-info">
+                <i class="fas fa-heart"></i>
+                <span class="pi-like-span">
+                  <%= post.likes.count %>
+                </span>
+
+                <i class="fas fa-comment"></i>
+                <span class="pi-comment-span">
+                  <%= post.comments.count %>
+                </span>
+              </p>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+
+<% if @saved_posts.length > 24 %>
+  <%= link_to "More posts...", more_saved_posts_path(next: 24), method: :post, remote: true, id: "more-link", class: "bottom-links" %>
+
+  <button id="top-link" class="bottom-links">Back to top</button>
+<% end %>

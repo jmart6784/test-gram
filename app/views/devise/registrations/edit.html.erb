@@ -1,0 +1,91 @@
+<div id="edit-user-container">
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, id: "edit-user-form-container" }) do |f| %>
+
+    <% if resource.errors.any? %>
+      <div id="edit-user-error-explanation">
+
+        <p id="edit-user-form-error-title">Failed to save changes</p>
+
+        <ul id="edit-user-error-ul">
+          <% resource.errors.full_messages.each do |message| %>
+            <li class="edit-user-error-message"><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div id="user-avatar-container" class="edit-user-field">
+      <% if current_user.avatar.attached? %> 
+        <div id="edit-user-avatar" class="background-image" style="background-image: url('<%= url_for(current_user.avatar) %>');"></div>
+      <% else %>
+        <div id="edit-user-avatar" class="background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+      <% end %>
+
+      <div id="edit-user-change-ava-container">
+        <%= f.file_field :avatar, id: "primary-file-input" %>
+        <p id="edit-user-user-title"><%= current_user.username %></p>
+        <p id="choose-file" class="edit-user-field-input-decoy">Change Profile Photo</p>
+      </div>
+    </div>
+
+    <div class="edit-user-field">
+      <%= f.label :first_name, class: "edit-user-label" %>
+      <%= f.text_field :first_name, class: "edit-user-input" %>
+    </div>
+
+    <div class="edit-user-field">
+      <%= f.label :last_name, class: "edit-user-label" %>
+      <%= f.text_field :last_name, class: "edit-user-input" %>
+    </div>
+
+    <div class="edit-user-field">
+      <%= f.label :username, class: "edit-user-label" %>
+      <%= f.text_field :username, class: "edit-user-input" %>
+    </div>
+
+    <div class="edit-user-field">
+      <%= f.label :bio, class: "edit-user-label" %>
+      <%= f.text_area :bio, id: "edit-bio-text-area", class: "edit-user-input" %>
+    </div>
+
+    <div class="edit-user-field">
+      <%= f.label :email, class: "edit-user-label" %>
+      <%= f.email_field :email, autocomplete: "email", class: "edit-user-input" %>
+    </div>
+
+    <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+      <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+    <% end %>
+
+    <div class="edit-user-field">
+      <% if @minimum_password_length %>
+        <% placeholder_txt = "#{@minimum_password_length} characters minimum" %>
+      <% else %>
+        <% placeholder_txt = "" %>
+      <% end %>
+
+      <%= f.label "New password (optional)", class: "edit-user-label" %>
+      <%= f.password_field :password, autocomplete: "new-password", placeholder: placeholder_txt, id: "edit-user-new-password", class: "edit-user-input" %>
+    </div>
+
+    <div id="edit-user-confirm-p1" class="edit-user-field">
+      <%= f.label "Confirm new password", class: "edit-user-label" %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: placeholder_txt, class: "edit-user-input" %>
+    </div>
+
+    <div id="edit-user-confirm-p2" class="edit-user-field">
+      <%= f.label "Current Password (required)", class: "edit-user-label" %>
+      <%= f.password_field :current_password, autocomplete: "current-password", placeholder: "(required)", class: "edit-user-input" %>
+    </div>
+
+    <div class="edit-user-actions">
+      <%= f.submit "Submit", id: "edit-user-submit" %>
+    </div>
+  <% end %>
+
+  <div class="edit-user-cancel-div">
+    <h3 id="edit-user-title">Cancel Your Account <i class="fas fa-caret-down"></i></h3>
+    <%= button_to "Cancel", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete, id: "edit-user-delete" %>
+  </div>
+
+</div>

@@ -1,0 +1,238 @@
+<% if params[:video_post_id] %>
+  <% id_param = params[:video_post_id] %>
+<% else %>
+  <% id_param = params[:post_id] %>
+<% end %>
+
+document.getElementById("<%= params[:comment][:html_text_id] %>").value = "";
+var parentComment = document.getElementById("<%= params[:comment][:parent_div_id] %>");
+
+<% if params[:comment][:html_text_id] === "comment-text-field" %>
+  // Create div container for comment
+  var comContainer = document.createElement("div");
+  comContainer.classList.add("post-show-split-avacom");
+  parentComment.insertBefore(comContainer, parentComment.firstChild);
+
+  // Create user avatar
+  var userAvatar = document.createElement("div");
+  userAvatar.classList.add("post-show-comment-avatar");
+  userAvatar.classList.add("background-image");
+
+  <% if current_user.avatar.attached? %> 
+    userAvatar.style.backgroundImage = "url(<%= url_for(current_user.avatar) %>)";
+  <% else %>
+    userAvatar.style.backgroundImage = "url(/assets/default_profile.jpg)";
+  <% end %>
+
+  comContainer.appendChild(userAvatar);
+
+  // Create div for holding comment text and like link
+  var comContents = document.createElement("div");
+  comContents.id = "post-show-comment-contents";
+
+  comContainer.appendChild(comContents);
+
+  // Create div for first row of comments text and like link
+  var comRow1 = document.createElement("div");
+  comRow1.id = "show-post-first-row-comment-div";
+
+  comContents.appendChild(comRow1);
+
+  // Create comment body
+  var comBody = document.createElement("p");
+  comBody.classList.add("show-post-comment");
+
+  comRow1.appendChild(comBody);
+
+  // Create bold tag for comment user name
+  var comStrong = document.createElement("strong");
+
+  comBody.appendChild(comStrong);
+
+  // Create link for comment user name
+  var comUsername = document.createElement("a");
+  comUsername.classList.add("post-show-un-link");
+  comUsername.href = "<%= url_for(current_user) %>";
+  comUsername.textContent = "<%= current_user.username + ' ' %>";
+
+  comStrong.appendChild(comUsername);
+
+  // Append comment body
+  var comText = document.createElement("span");
+  comText.textContent = "<%= params[:comment][:body] %>";
+
+  comBody.appendChild(comText);
+
+  // Create container for like and delete links
+  var ldDiv = document.createElement("div");
+  ldDiv.id = "show-post-comment-ld-div";
+
+  comRow1.appendChild(ldDiv);
+
+  // Create div for delete link
+  var delDiv = document.createElement("div");
+
+  ldDiv.appendChild(delDiv);
+
+  // Create Delete link
+  var delLink = document.createElement("a");
+  delLink.href = "<%= post_comment_path(@post.id, @comment.id) %>";
+  delLink.setAttribute("data-method", "delete");
+  delLink.setAttribute("data-confirm", "Are you sure?");
+  delLink.classList.add("comment-del-link");
+
+  delDiv.appendChild(delLink);
+
+  // Create icon
+  var iconDel = document.createElement("i");
+  iconDel.classList.add("far");
+  iconDel.classList.add("fa-trash-alt");
+  iconDel.classList.add("comment-del-link");
+
+  delLink.appendChild(iconDel);
+
+  // Create Like link
+  var likeLink = document.createElement("a");
+  likeLink.href = '<%= raw ajax_likes_update_like_path(id: @comment.id, type: "comment", html_id: "likeable_comment_id_#{@comment.id}", html_count_id: "comment_like_count#{@comment.id}") %>';
+
+  likeLink.setAttribute("data-method", "put");
+  likeLink.setAttribute("data-remote", "true");
+
+  ldDiv.appendChild(likeLink);
+
+  // Like icon
+  var likeIcon = document.createElement("i");
+  likeIcon.id = '<%= "likeable_comment_id_#{@comment.id}" %>';
+  likeIcon.classList.add("far");
+  likeIcon.classList.add("fa-heart");
+
+  likeLink.appendChild(likeIcon);
+
+  // Create second row div that holds date and like count
+  var infoDiv = document.createElement("div");
+  infoDiv.id = "post-show-comment-stats-div";
+
+  comContents.appendChild(infoDiv);
+
+  // Create date paragraph element
+  var pDate = document.createElement("p");
+  pDate.classList.add("post-show-comment-stats");
+  pDate.classList.add("p-show-time-stat");
+  pDate.textContent = '<%= "#{time_ago_in_words(@comment.created_at)}"  %>';
+
+  infoDiv.appendChild(pDate);
+
+  // Create Like paragraph element
+  var pLikes = document.createElement("p");
+  pLikes.id = '<%= "comment_like_count#{@comment.id}" %>';
+  pLikes.classList.add("post-show-comment-stats");
+  pLikes.classList.add("p-show-likes-stat");
+  pLikes.textContent = '<%= "#{@comment.likes.count} like".pluralize(@comment.likes.count) %>';
+
+  infoDiv.appendChild(pLikes);
+<% elsif params[:comment][:html_text_id] === "comment-text-field2" %>
+  // Create outer div
+  var mobileCommentDiv = document.createElement("div");
+  mobileCommentDiv.classList.add("mobile-full-com-container");
+  parentComment.insertBefore(mobileCommentDiv, parentComment.firstChild);
+
+  // Create avatar
+  var mobileAvatar = document.createElement("div");
+  mobileAvatar.classList.add("mobile-avatar");
+  mobileAvatar.classList.add("background-image");
+
+  <% if current_user.avatar.attached? %> 
+    mobileAvatar.style.backgroundImage = "url(<%= url_for(current_user.avatar) %>)";
+  <% else %>
+    mobileAvatar.style.backgroundImage = "url(/assets/default_profile.jpg)";
+  <% end %>
+
+  mobileCommentDiv.appendChild(mobileAvatar);
+
+  // Create middle div for comment body, user name, and comment stats
+  var mobileMidDiv = document.createElement("div");
+  mobileCommentDiv.appendChild(mobileMidDiv);
+
+  // Create comment body
+  var mobileComBody = document.createElement("p");
+  mobileComBody.classList.add("full-mob-com-body");
+  mobileComBody.classList.add("full-com-fsize");
+
+  mobileMidDiv.appendChild(mobileComBody);
+
+  // Create strong tag for username
+  var mobStrongUn = document.createElement("strong");
+  mobileComBody.appendChild(mobStrongUn);
+
+  // Create username link for comment body
+  var mobComUsername = document.createElement("a");
+  mobComUsername.href = '<%= url_for(current_user) %>';
+  mobComUsername.textContent = "<%= current_user.username %> ";
+  mobComUsername.classList.add("mobile-username-link");
+  mobStrongUn.appendChild(mobComUsername);
+
+  // Create comment body
+  var mobComBodySpan = document.createElement("span");
+  mobComBodySpan.textContent = "<%= @comment.body %>";
+  mobileComBody.appendChild(mobComBodySpan);
+
+  // Create stats Div
+  var mobileStatsDiv = document.createElement("div");
+  mobileStatsDiv.classList.add("mob-com-stats-parent-container");
+  mobileMidDiv.appendChild(mobileStatsDiv);
+
+  // Create p tag for time
+  var mobTimeP = document.createElement("p");
+  mobTimeP.classList.add("mob-com-stat-time");
+  mobTimeP.classList.add("mob-com-stat");
+  mobTimeP.textContent = '<%= "#{time_ago_in_words(@comment.created_at)}" %>';
+  mobileStatsDiv.appendChild(mobTimeP);
+
+  // Create p tag for Comment like count
+  var mobComTime = document.createElement("p");
+  mobComTime.id = '<%= "mob_full_comment_like_count#{@comment.id}" %>';
+  mobComTime.classList.add("mob-com-stat");
+  mobComTime.textContent = '<%= "#{@comment.likes.count} like".pluralize(@comment.likes.count) %>';
+  mobileStatsDiv.appendChild(mobComTime);
+
+  // Create links div container
+  var mobEndDiv = document.createElement("div");
+  mobEndDiv.id = "mob-comm-links-div";
+
+  mobileCommentDiv.appendChild(mobEndDiv);
+
+  // Create div to hold delete link
+  var mobDelDiv = document.createElement("div");
+  mobEndDiv.appendChild(mobDelDiv);
+
+  // Create delete link
+  var mobDelLink = document.createElement("a");
+  mobDelLink.href = "<%= raw post_comment_path(@post.id, @comment.id) %>";
+  mobDelLink.setAttribute("data-method", "delete");
+  mobDelLink.setAttribute("data-confirm", "Are you sure?");
+  mobDelLink.classList.add("comment-del-link");
+  mobDelDiv.appendChild(mobDelLink);
+
+  // Create trash icon
+  var mobTrash = document.createElement("i");
+  mobTrash.classList.add("far");
+  mobTrash.classList.add("fa-trash-alt");
+  mobTrash.classList.add("mobile-comment-activity-link");
+  mobDelLink.appendChild(mobTrash);
+
+  // Create like link
+  var mobLikeLink = document.createElement("a");
+  mobLikeLink.href = '<%= ajax_likes_update_like_path(id: @comment.id, type: "comment", html_id: "mob_full_likeable_comment_id_#{@comment.id}", html_count_id: "mob_full_comment_like_count#{@comment.id}") %>';
+  mobLikeLink.setAttribute("data-method", "put");
+  mobLikeLink.setAttribute("data-remote", "true");
+  mobLikeLink.classList.add("mobile-comment-activity-link");
+  mobEndDiv.appendChild(mobLikeLink);
+
+  // Like icon
+  var mobLikeIcon = document.createElement("i");
+  mobLikeIcon.id = '<%= "mob_full_likeable_comment_id_#{@comment.id}" %>';
+  mobLikeIcon.classList.add("far");
+  mobLikeIcon.classList.add("fa-heart");
+
+  mobLikeLink.appendChild(mobLikeIcon);
+<% end %>

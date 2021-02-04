@@ -1,0 +1,114 @@
+var moreLink = document.getElementById("more-link");
+
+<% if @conversations.length === 0 %>
+  // Back to top link when there is no more content
+  moreLink.style.display = "none";
+  document.getElementById("top-link").style.display = "block";
+<% else %>
+  // Make href request for next posts
+  moreLink.href = "/more_conversations?next=<%= @next_start_point %>";
+<% end %>
+
+var parentDiv = document.getElementById("conversations-container");
+
+<% @conversations.each do |conversation| %>
+
+  <% next if conversation.messages.count === 0 %>
+
+  <% if conversation.sender_id === current_user.id || conversation.recipient_id === current_user.id %>
+
+    <% if conversation.sender_id === current_user.id %>
+      <% recipient = User.find(conversation.recipient_id) %>
+    <% else %>
+      <% recipient = User.find(conversation.sender_id) %>
+    <% end %>
+
+    // Create div for conversation
+    var convoDiv = document.createElement("div");
+    convoDiv.classList.add("convo-div");
+    parentDiv.appendChild(convoDiv);
+
+    // Create Div for avatar
+    var avaDiv = document.createElement("div");
+    avaDiv.onclick = () => {
+      location.href = "<%= conversation_messages_path(conversation) %>";
+    };
+    convoDiv.appendChild(avaDiv);
+
+    // Create avatar
+    var avatar = document.createElement("div");
+    avatar.classList.add("convo-index-avatar");
+    avatar.classList.add("background-image");
+
+    <% if recipient.avatar.attached? %>
+      avatar.style.backgroundImage = "url('<%= url_for(recipient.avatar) %>')";
+    <% else %>
+      avatar.style.backgroundImage = "url('/assets/default_profile.jpg')";
+    <% end %>
+    avaDiv.appendChild(avatar);
+
+    // Create conversation text div
+    var textDiv = document.createElement("div");
+    textDiv.classList.add("conversation-text-div");
+    textDiv.onclick = () => {
+      location.href = "<%= conversation_messages_path(conversation) %>";
+    };
+    convoDiv.appendChild(textDiv);
+
+    // Create recipient name
+    var recipientP = document.createElement("p");
+    recipientP.classList.add("conversation-text");
+    recipientP.textContent = "<%= recipient.username %>";
+    textDiv.appendChild(recipientP);
+
+    // Create div for p tag
+    var pDiv = document.createElement("div");
+    textDiv.appendChild(pDiv);
+
+    <% message_user = User.find(conversation.messages.last.user_id) %>
+    <% last_message = conversation.messages.last.body %>
+
+    // Create p tag with latest message
+    var pMessage = document.createElement("p");
+    pMessage.classList.add("conversation-text");
+    pMessage.classList.add("conversation-message-last");
+    pDiv.appendChild(pMessage);
+
+    // Create span if last message is from other user
+    <% unless current_user === message_user %>
+      var nameSpan = document.createElement("span");
+      nameSpan.textContent = "<%= message_user.username %> ";
+      pMessage.appendChild(nameSpan);
+    <% end %>
+
+    // Create span with latest message
+    var msgSpan = document.createElement("span");
+    <% if last_message.length > 35 %>
+      msgSpan.textContent = "<%= "#{last_message[0..35]}..." %>";
+    <% else %>
+      msgSpan.textContent = "<%= last_message %>";
+    <% end %>
+    pMessage.appendChild(msgSpan);
+
+    // Create date span
+    var msgDate = document.createElement("span");
+    msgDate.textContent = "<%= "· #{time_ago_in_words(conversation.messages.last.created_at.localtime)} ago" %>";
+    pMessage.appendChild(msgDate);
+
+    // Create delete link
+    var delLink = document.createElement("a");
+    delLink.setAttribute("data-method", "delete");
+    delLink.setAttribute("data-confirm", "Are you sure?");
+    delLink.href = "<%= url_for(conversation) %>";
+    convoDiv.appendChild(delLink);
+
+    // Create delete icon
+    var delIcon = document.createElement("i");
+    delIcon.classList.add("far");
+    delIcon.classList.add("fa-trash-alt");
+    delIcon.classList.add("conversation-del-link");
+    delLink.appendChild(delIcon);
+  
+  <% end %>
+
+<% end %>

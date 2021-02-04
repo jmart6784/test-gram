@@ -1,0 +1,222 @@
+<% if @sorted_feed.length === 0 %>
+  <%
+    users = User.all
+    temp_ary = []
+    sorted_by_followers = []
+
+    users.each do |user|
+      temp_ary << { follower_count: user.followers.count, user_obj: user }
+    end
+
+    temp_ary = (temp_ary.sort_by { |x| x[:follower_count] }).reverse!
+
+    temp_ary.each do |obj|
+      sorted_by_followers << obj[:user_obj]
+    end
+  %>
+
+
+  <div id="following-feed-no-following-container">
+    <h3 id="suggested-title">Suggestions For You</h3>
+    <% sorted_by_followers.each do |user| %>
+      <% @follow = Follow.find_by(user_id: current_user.id, following_id: user.id) %>
+      <% next if current_user === user || @follow %>
+
+      <div class="suggested-user-div">
+
+        <%= link_to user, class: "suggested-avatar-link" do %>
+          <% if user.avatar.attached? %> 
+            <div class="suggested-avatar background-image" style="background-image: url('<%= url_for(user.avatar) %>');"></div>
+          <% else %>
+            <div class="suggested-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+          <% end %>
+        <% end %>
+
+        <div class="suggested-names">
+          <%= link_to user.username, user, class: "suggested-username suggested-name-txt" %>
+          <p class="suggested-name-txt"><%= "#{user.first_name} #{user.last_name}" %></p>
+        </div>
+
+        <% follow_txt = @follow ? "Unfollow" : "Follow" %>
+
+        <%= link_to follow_txt, ajax_follows_update_follow_path(user_id: current_user.id, following_id: user.id, html_id: "follow-#{user.id}", id: 0), method: :put, remote: true, id: "follow-#{user.id}", class: "suggested-follow-link" %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div id="following-container">
+    <div id="following-mid-container">
+
+      <% @sorted_feed[0, 10].each do |post| %>
+
+        <%
+          all_comments = post.comments 
+
+          temp_ary = []
+          comments = []
+
+          all_comments.each do |comment|
+            temp_ary << { likes: comment.likes.count, com_obj: comment }
+          end
+
+          temp_ary = (temp_ary.sort_by { |x| x[:likes] }).reverse!
+          
+          temp_ary.each do |obj|
+            comments << obj[:com_obj]
+          end
+        %>
+
+        <div id="following-post-container">
+          <% user = User.find(post.user_id) %>
+
+          <div id="following-user-info-div">
+            <% if user.avatar.attached? %> 
+              <div class="following-avatar background-image" style="background-image: url('<%= url_for(user.avatar) %>');"></div>
+            <% else %>
+              <div class="following-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+            <% end %>
+
+            <p><%= link_to user.username, user, class: "following-header-username following-un-size" %></p>
+          </div>
+
+          <% if post.class.method_defined? :image %>
+            <div>
+              <div class="following-feed-image background-image" style="background-image: url('<%= url_for(post.image) %>');">
+              
+              </div>
+            </div>
+          <% elsif post.class.method_defined? :clip %>
+            <div class="video-container">
+              <%= video_tag url_for(post.clip), controls: "", class: "following-feed-video" %>
+            </div>
+          <% end %>
+
+          <div class="following-activity-options following-pad">
+            <div class="following-activity-lc">
+              <% if post.class.method_defined? :image %>
+                <% like_exists = Like.where(post_id: post.id, user_id: current_user.id) == [] ? "far fa-heart" : "fas fa-heart  like-icon-col" %>
+
+                <%= link_to ajax_likes_update_like_path(id: post.id, type: "post", html_id: "likeable_id_#{post.id}", html_count_id: "like_count#{post.id}"), method: :put, remote: true, class: "following-like-link foll-activity-link" do %>
+                  <i id="<%= "likeable_id_#{post.id}" %>" class="<%= like_exists %>"></i>
+                <% end %>  
+
+              <% elsif post.class.method_defined? :clip %>   
+                <% like_exists = Like.where(video_post_id: post.id, user_id: current_user.id) == [] ? "far fa-heart" : "fas fa-heart like-icon-col" %>
+
+                <%= link_to ajax_likes_update_like_path(id: post.id, type: "video post", html_id: "video_likeable_id_#{post.id}", html_count_id: "video_like_count#{post.id}"), method: :put, remote: true, class: "following-like-link foll-activity-link" do %>
+                  <i id="<%= "video_likeable_id_#{post.id}" %>" class="<%= like_exists %>"></i>
+                <% end %>
+              <% end %>
+
+              <%= link_to post do %>
+                <i class="far fa-comment foll-activity-link"></i>
+              <% end %>          
+            </div>
+
+            <% unless current_user === user %>
+              <% if post.class.method_defined? :image %>
+                <% save_exists = SavedPost.where(user_id: current_user.id, post_id: post.id) === [] ? "far fa-bookmark" : "fas fa-bookmark" %>
+
+                <%= link_to ajax_saved_posts_saved_post_path(user_id: current_user.id, id: post.id, type: "image", html_id: "saveable_post_id_#{post.id}"), method: :put, remote: true, class: "foll-activity-link" do %>
+                  <i id="<%= "saveable_post_id_#{post.id}" %>" class="<%= save_exists %>"></i>
+                <% end %>
+              <% elsif post.class.method_defined? :clip %>
+                  <% save_exists = SavedPost.where(user_id: current_user.id, video_post_id: post.id) === [] ? "far fa-bookmark" : "fas fa-bookmark" %>
+
+                  <%= link_to ajax_saved_posts_saved_post_path(user_id: current_user.id, id: post.id, type: "video", html_id: "saveable_video_post_id_#{post.id}"), method: :put, remote: true, class: "foll-activity-link" do %>
+                    <i id="<%= "saveable_video_post_id_#{post.id}" %>" class="<%= save_exists %>"></i>
+                  <% end %>
+              <% end %>
+            <% else %>
+              <div></div>
+            <% end %>
+          </div>
+
+          <div class="following-pad">
+            <% if post.class.method_defined? :image %>
+              <h3 id=<%= "like_count#{post.id}" %> class="following-like-count">
+                <%= "#{post.likes.count} like".pluralize(post.likes.count) %>
+              </h3>
+            <% elsif post.class.method_defined? :clip %>
+              <h3 id=<%= "video_like_count#{post.id}" %> class="following-like-count">
+                <%= "#{post.likes.count} like".pluralize(post.likes.count) %>
+              </h3>
+            <% end %>
+          </div>
+
+          <div class="following-pad">
+            <% unless post.caption === "" %>
+              <p class="following-base-fsize following-word-wrap">
+                <strong>
+                  <%= link_to user.username, user, class: "following-header-username" %>
+                </strong> 
+                <% if post.caption.length > 150 %>
+                  <%= post.caption[0..150] %><span class="show-more">...Show More</span><span class="more-content"><%= post.caption[150..post.caption.length] %></span><span class="show-less">...Show Less</span>
+                <% else %>
+                  <%= post.caption %>
+                <% end %>
+              </p>
+            <% end %>
+          </div>
+
+          <% if post.class.method_defined? :image %>
+            <% com_div_id = "image-comment-div-#{post.id}" %>
+            <% com_input_id = "image-feed-text-field-#{post.id}" %>
+          <% elsif post.class.method_defined? :clip %>
+            <% com_div_id = "video-comment-div-#{post.id}" %>
+            <% com_input_id = "video-feed-text-field-#{post.id}" %>
+          <% end %>
+
+          <div id=<%= com_div_id %>>
+            <% unless post.comments.count === 0 %>
+
+              <%= link_to "View all #{post.comments.count} " + "comment".pluralize(post.comments.count), post, class: "following-pad following-base-fsize following-gray-txt" %>
+
+              <% comments.slice(0, 3).each do |comment| %>
+                <% user_com = User.find(comment.user_id) %>
+
+                <p class="following-word-wrap following-pad following-base-fsize">
+                  <strong>
+                    <%= link_to user_com.username, user_com, class: "following-header-username" %>
+                  </strong> 
+                  <% if comment.body.length > 150 %>
+                    <%= comment.body[0..150] %><span class="show-more">...Show More</span><span class="more-content"><%= comment.body[150..comment.body.length] %></span><span class="show-less">...Show Less</span>
+                  <% else %>
+                    <%= comment.body %>
+                  <% end %>
+                </p>
+              <% end %>
+            <% end %>
+          </div>
+
+          <div class="following-pad following-pdate following-gray-txt">
+            <%= "#{time_ago_in_words(post.created_at.localtime)} ago"  %>
+          </div>
+
+          <% if post.class.method_defined? :image %>
+            <%= form_for [ post, @comment ], url: ajax_feed_comment_post_comment_path(id: 0, post_id: post.id, video_post_id: 0, type: "image", html_id: com_div_id, html_input: com_input_id), html: {remote: true, class: "following-feed-comment-form"} do |f| %>
+
+              <%= f.text_field :body, placeholder: "Add a comment...", id: com_input_id, class: "following-comment-input", required: true, maxlength: 2200 %>
+
+              <%= f.submit "Post", class: "following-form-comment-submit" %>
+            <% end %>
+          <% elsif post.class.method_defined? :clip %>
+            <%= form_for [ post, @comment ], url: ajax_feed_comment_post_comment_path(id: 0, post_id: 0, video_post_id: post.id, type: "video", html_id: com_div_id, html_input: com_input_id), html: {remote: true, class: "following-feed-comment-form"} do |f| %>
+
+              <%= f.text_field :body, placeholder: "Add a comment...", id: com_input_id, class: "following-comment-input", required: true, maxlength: 2200 %>
+
+              <%= f.submit "Post", class: "following-form-comment-submit" %>
+            <% end %>
+          <% end %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+
+  <% if @sorted_feed.length > 10 %>
+    <%= link_to "More posts...", more_following_path(posts: 0, next: 10), method: :post, remote: true, id: "more-link", class: "bottom-links" %>
+
+    <button id="top-link" class="bottom-links">Back to top</button>
+  <% end %>
+<% end %>

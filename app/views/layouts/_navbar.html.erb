@@ -1,0 +1,80 @@
+ <% if user_signed_in? %>  
+  <div id="nav-bar">
+    <div id="inner-nav-div">
+
+      <%= link_to following_feed_path, id: "nav-logo-link", class: "nav-link" do %>
+        <%= image_tag ("/assets/logo.png"), id: "nav-logo" %>
+      <% end %>
+
+      <%= form_tag(users_path, method: :get, id: "nav-form") do %>
+        <%= text_field_tag(:search, params[:search], placeholder: "search", id: "nav-search") %>
+
+        <button id="nav-search-btn" type="submit" name="commit">
+          <i class="fas fa-search"></i>
+        </button>
+      <% end %>
+
+      <div id="nav-right">
+        <%= link_to users_path, id: "nav-mobile-search", class: "nav-icon-link" do %>
+          <i class="fas fa-search"></i>
+        <% end %>
+
+        <%= link_to following_feed_path, id: "nav-home-icon-link", class: "nav-icon-link" do %>
+          <i class="fas fa-home"></i>
+        <% end %>
+        
+        <%= link_to conversations_path, class: "nav-icon-link" do %>
+          <i class="far fa-paper-plane"></i>
+        <% end %>
+
+        <%= link_to posts_path, class: "nav-icon-link" do %>
+          <i class="far fa-compass"></i>
+        <% end %>
+
+        <%= link_to activity_path, class: "nav-icon-link" do %>
+          <i class="far fa-heart"></i>
+        <% end %>
+
+        <div>
+          <% if current_user.avatar.attached? %> 
+            <div id="nav-prof-pic" class="background-image" style="background-image: url('<%= url_for(current_user.avatar) %>');"></div>
+          <% else %>
+            <div id="nav-prof-pic" class="background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+          <% end %>
+
+          <div id="nav-drop-content">
+            <div id="drp-arrow" class="nav-drop-links">
+              <i class="fas fa-chevron-up"></i>
+            </div>
+
+            <%= link_to current_user, class: "nav-drop-links" do %>
+              <i class="far fa-user-circle nav-drop-links"></i>
+              <span class="nav-link-txt">Profile</span>
+            <% end %>
+
+            <%= link_to saved_posts_path, class: "nav-drop-links" do %>
+              <i class="far fa-bookmark nav-drop-links"></i>
+              <span class="nav-link-txt">Saved</span>
+            <% end %>
+
+            <%= link_to edit_user_registration_path, class: "nav-drop-links" do %>
+              <i class="fas fa-cog nav-drop-links"></i>
+              <span class="nav-link-txt">Settings</span>
+            <% end %>
+
+            <%= link_to destroy_user_session_path, method: :delete, id: "nav-log-out", class: "nav-drop" do %>
+              <span class="nav-link-txt">Log Out</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+<% else %>
+  <div id="nav-bar">
+    <div id="nav-sign-out">
+      <%= image_tag ("/assets/logo.png"), id: "nav-logo" %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,333 @@
+<% if  params[:type] === "desktop" %>
+  var moreLink = document.getElementById("more-comments");
+
+  <% if @comments.length === 0 %>
+    // Back to top link when there are no more comments to show
+    moreLink.style.display = "none";
+    document.getElementById("top-of-comments").style.display = "block";
+  <% else %>
+    // Make href request for next comments
+    moreLink.href = "/more_comments/<%= params[:post_id] %>?html_id=<%= params[:html_id] %>&next=<%= @next_start_point %>&post_type=<%= params[:post_type] %>&type=<%= params[:type] %>";
+  <% end %>
+
+  var parentDiv = document.getElementById("<%= params[:html_id] %>");
+
+  <% @comments.each do |comment| %>
+    <% user = User.find(comment.user_id) %>
+
+    // Create comment div
+    var comDiv = document.createElement("div");
+    comDiv.classList.add("post-show-split-avacom");
+    parentDiv.appendChild(comDiv);
+
+    // Create avatar
+    var avatar = document.createElement("div");
+    avatar.classList.add("post-show-comment-avatar");
+    avatar.classList.add("background-image");
+    <% if user.avatar.attached? %>
+      avatar.style.backgroundImage = "url('<%= url_for(user.avatar) %>')";
+    <% else %>
+      avatar.style.backgroundImage = "url('/assets/default_profile.jpg')";
+    <% end %>
+    comDiv.appendChild(avatar);
+
+    // Create div for more comment content
+    var comContent = document.createElement("div");
+    comContent.id = "post-show-comment-contents";
+    comDiv.appendChild(comContent);
+
+    // Create div first row of comment data
+    var row1 = document.createElement("div");
+    row1.id = "show-post-first-row-comment-div";
+    comContent.appendChild(row1);
+
+    // Create comment body
+    var comBody = document.createElement("p");
+    comBody.classList.add("show-post-comment");
+    row1.appendChild(comBody);
+
+    // Create strong tag for username
+    var strongUn = document.createElement("strong");
+    comBody.appendChild(strongUn);
+
+    // Create username link
+    var username = document.createElement("a");
+    username.href = "<%= url_for(user) %>";
+    username.textContent = "<%= user.username %> ";
+    username.classList.add("post-show-un-link");
+    strongUn.appendChild(username);
+
+    // Add comment body depending on size
+    <% if comment.body.length > 150 %>
+      // Create first half of a long comment
+      var firstHalf = document.createElement("span");
+      firstHalf.textContent = "<%= comment.body[0..150] %>";
+      comBody.appendChild(firstHalf);
+
+      // Create show more span
+      var moreCom = document.createElement("span");
+      moreCom.classList.add("show-more");
+      moreCom.textContent = "...Show More";
+      comBody.appendChild(moreCom);
+
+      // Create second half of a long comment
+      var secondHalf = document.createElement("span");
+      secondHalf.classList.add("more-content");
+      secondHalf.textContent = "<%= comment.body[150..comment.body.length] %>";
+      comBody.appendChild(secondHalf);
+
+      // Create show less span
+      var lessCom = document.createElement("span");
+      lessCom.classList.add("show-less");
+      lessCom.textContent = "...Show less";
+      comBody.appendChild(lessCom);
+    <% else %>
+      // Create comment body for a small comment < 150
+      var smallCom = document.createElement("span");
+      smallCom.textContent = "<%= comment.body %>";
+      comBody.appendChild(smallCom);
+    <% end %>
+
+    // Create div for like and delete links
+    var ldDiv = document.createElement("div");
+    ldDiv.id = "show-post-comment-ld-div";
+    row1.appendChild(ldDiv);
+
+    // Create blank div for delete link
+    var delDiv = document.createElement("div");
+    ldDiv.appendChild(delDiv);
+
+    // Create delete link if comment id === user id
+    <% if current_user.id === comment.user_id %>
+      var delLink = document.createElement("a");
+      delLink.classList.add("comment-del-link");
+      delLink.setAttribute("data-method", "delete");
+      delLink.setAttribute("data-confirm", "Are you sure?");
+      delLink.href = "<%= raw post_comment_path(@post.id, comment.id) %>";
+      delDiv.appendChild(delLink);
+
+      // Create trash icon
+      var trash = document.createElement("i");
+      trash.classList.add("far");
+      trash.classList.add("fa-trash-alt");
+      trash.classList.add("comment-del-link");
+      delLink.appendChild(trash);
+    <% end %>
+
+    // Create like link
+    var likeLink = document.createElement("a");
+    likeLink.href = "<%= raw ajax_likes_update_like_path(id: comment.id, type: "comment", html_id: "likeable_comment_id_#{comment.id}", html_count_id: "comment_like_count#{comment.id}") %>";
+    likeLink.setAttribute("data-remote", "true");
+    likeLink.setAttribute("data-method", "put");
+    ldDiv.appendChild(likeLink);
+
+    // Create like icon
+    var heart = document.createElement("i");
+    heart.id = "<%= "likeable_comment_id_#{comment.id}" %>";
+    <% if Like.where(comment_id: comment.id, user_id: current_user.id) == [] %>
+      heart.classList.add("far");
+      heart.classList.add("fa-heart");
+    <% else %>
+      heart.classList.add("fas");
+      heart.classList.add("fa-heart");
+      heart.classList.add("like-icon-col");
+    <% end %>
+    likeLink.appendChild(heart);
+
+    // Create div for post like count and date
+    var statsDiv = document.createElement("div");
+    statsDiv.id = "post-show-comment-stats-div";
+    comContent.appendChild(statsDiv);
+
+    // Create date p tag
+    var pDate = document.createElement("p");
+    pDate.classList.add("post-show-comment-stats");
+    pDate.classList.add("p-show-time-stat");
+    pDate.textContent = "<%= "#{time_ago_in_words(comment.created_at.localtime)}" %>";
+    statsDiv.appendChild(pDate);
+
+    // Create comments like count
+    var comLikes = document.createElement("p");
+    comLikes.id = "<%= "comment_like_count#{comment.id}" %>";
+    comLikes.classList.add("post-show-comment-stats");
+    comLikes.classList.add("p-show-likes-stat");
+    comLikes.textContent = "<%= "#{comment.likes.count} like".pluralize(comment.likes.count) %>";
+    statsDiv.appendChild(comLikes);
+
+  <% end %>
+<% else %>
+  var moreLink = document.getElementById("more-comments2");
+
+  <% if @comments.length === 0 %>
+    // Back to top link when there are no more comments to show
+    moreLink.style.display = "none";
+    document.getElementById("top-of-comments2").style.display = "block";
+  <% else %>
+    // Make href request for next comments
+    moreLink.href = "/more_comments/<%= params[:post_id] %>?html_id=<%= params[:html_id] %>&next=<%= @next_start_point %>&post_type=<%= params[:post_type] %>&type=<%= params[:type] %>";
+  <% end %>
+
+  var parentDiv = document.getElementById("<%= params[:html_id] %>");
+
+  <% @comments.each do |comment| %>
+    <% user_com = User.find(comment.user_id) %>
+
+    // Create comment div
+    var comDiv = document.createElement("div");
+    comDiv.classList.add("mobile-full-com-container");
+    parentDiv.appendChild(comDiv);
+
+    // Create user avatar
+    var avatar = document.createElement("div");
+    avatar.classList.add("mobile-avatar");
+    avatar.classList.add("background-image");
+    <% if user_com.avatar.attached? %> 
+      avatar.style.backgroundImage = "url('<%= url_for(user_com.avatar) %>')";
+    <% else %>
+      avatar.style.backgroundImage = "url('/assets/default_profile.jpg')";
+    <% end %>
+    comDiv.appendChild(avatar);
+
+    // Create blank div
+    var blankDiv = document.createElement("div");
+    comDiv.appendChild(blankDiv);
+
+    // Create p tag fot username and comment body
+    var commentP = document.createElement("p");
+    commentP.classList.add("full-mob-com-body");
+    commentP.classList.add("full-com-fsize");
+    blankDiv.appendChild(commentP);
+
+    // Create strong tag for username
+    var strongUn = document.createElement("strong");
+    commentP.appendChild(strongUn);
+
+    // Create link for username
+    var unLink = document.createElement("a");
+    unLink.classList.add("mobile-username-link");
+    unLink.href = "<%= url_for(user_com) %>";
+    unLink.textContent = "<%= user_com.username %> ";
+    strongUn.appendChild(unLink);
+
+    // Create comment body depending on length
+    <% if comment.body.length > 150 %>
+      // Create first half of a long comment
+      var firstHalf = document.createElement("span");
+      firstHalf.textContent = "<%= comment.body[0..150] %>";
+      commentP.appendChild(firstHalf);
+
+      // Create show more span
+      var moreCom = document.createElement("span");
+      moreCom.classList.add("show-more");
+      moreCom.textContent = "...Show More";
+      commentP.appendChild(moreCom);
+
+      // Create second half of a long comment
+      var secondHalf = document.createElement("span");
+      secondHalf.classList.add("more-content");
+      secondHalf.textContent = "<%= comment.body[150..comment.body.length] %>";
+      commentP.appendChild(secondHalf);
+
+      // Create show less span
+      var lessCom = document.createElement("span");
+      lessCom.classList.add("show-less");
+      lessCom.textContent = "...Show Less";
+      commentP.appendChild(lessCom);
+    <% else %>
+      // Create comment body for short comment
+      var shortComment = document.createElement("span");
+      shortComment.textContent = "<%= comment.body %>";
+      commentP.appendChild(shortComment);
+    <% end %>
+
+    // Create div for comment date and like count
+    var statsDiv = document.createElement("div");
+    statsDiv.classList.add("mob-com-stats-parent-container");
+    blankDiv.appendChild(statsDiv);
+
+    // Create comment date
+    var comDate = document.createElement("p");
+    comDate.classList.add("mob-com-stat-time");
+    comDate.classList.add("mob-com-stat");
+    comDate.textContent = "<%= "#{time_ago_in_words(comment.created_at.localtime)}" %>";
+    statsDiv.appendChild(comDate);
+
+    // Create Like count
+    var comLikes = document.createElement("p");
+    comLikes.id = "<%= "mob_full_comment_like_count#{comment.id}" %>";
+    comLikes.classList.add("mob-com-stat");
+    comLikes.textContent = "<%= "#{comment.likes.count} like".pluralize(comment.likes.count) %>";
+    statsDiv.appendChild(comLikes);
+
+    // Create div for like and delete link
+    var ldDiv = document.createElement("div");
+    ldDiv.id = "mob-comm-links-div";
+    comDiv.appendChild(ldDiv);
+
+    // Create div for delete link
+    var delDiv = document.createElement("div");
+    ldDiv.appendChild(delDiv);
+
+    // Create delete link
+    <% if current_user.id === comment.user_id %>
+      var delLink = document.createElement("a");
+      delLink.classList.add("comment-del-link");
+      delLink.setAttribute("data-method", "delete");
+      delLink.setAttribute("data-confirm", "Are you sure?");
+      delLink.href = "<%= raw post_comment_path(@post.id, comment.id) %>";
+      delDiv.appendChild(delLink);
+
+      // Create trash icon
+      var trash = document.createElement("i");
+      trash.classList.add("far");
+      trash.classList.add("fa-trash-alt");
+      trash.classList.add("mobile-comment-activity-link");
+      delLink.appendChild(trash);
+    <% end %>
+
+    // Create like link
+    var likeLink = document.createElement("a");
+    likeLink.href = "<%= raw ajax_likes_update_like_path(id: comment.id, type: "comment", html_id: "mob_full_likeable_comment_id_#{comment.id}", html_count_id: "mob_full_comment_like_count#{comment.id}") %>";
+    likeLink.setAttribute("data-method", "put");
+    likeLink.setAttribute("data-remote", "true");
+    likeLink.classList.add("mobile-comment-activity-link");
+    ldDiv.appendChild(likeLink);
+
+    // Create like icon
+    var heart = document.createElement("i");
+    heart.id = "<%= "mob_full_likeable_comment_id_#{comment.id}" %>";
+    likeLink.appendChild(heart);
+    // Style depending if like exists
+    <% if Like.where(comment_id: comment.id, user_id: current_user.id) == [] %>
+      heart.classList.add("far");
+      heart.classList.add("fa-heart");
+    <% else %>
+      heart.classList.add("fas");
+      heart.classList.add("fa-heart");
+      heart.classList.add("like-icon-col");
+    <% end %>
+
+  <% end %>
+    
+<% end %>
+
+
+// Add show more/less event listeners on the new comments
+var showMoreSpans = document.querySelectorAll(".show-more");
+var showLessSpans = document.querySelectorAll(".show-less");
+
+showMoreSpans.forEach(span => {
+  span.addEventListener("click", () => {
+    span.style.display = "none";
+    span.nextElementSibling.style.display = "inline";
+    span.nextElementSibling.nextElementSibling.style.display = "inline";
+  });
+});
+
+showLessSpans.forEach(span => {
+  span.addEventListener("click", () => {
+    span.style.display = "none";
+    span.previousElementSibling.style.display = "none";
+    span.previousElementSibling.previousElementSibling.style.display = "inline";
+  });
+});

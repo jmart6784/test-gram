@@ -1,0 +1,24 @@
+document.getElementById("<%= params[:html_input] %>").value = "";
+
+var parentDiv = document.getElementById("<%= params[:html_id] %>");
+
+// Create p tag
+var pTag = document.createElement("p");
+pTag.classList.add("following-pad");
+pTag.classList.add("following-base-fsize");
+parentDiv.appendChild(pTag);
+
+// Create html strong tag
+var strongTag = document.createElement("strong");
+pTag.appendChild(strongTag);
+
+// Create user link
+var userLink = document.createElement("a");
+userLink.href = "<%= raw url_for(current_user) %>";
+userLink.textContent = "<%= current_user.username %>";
+userLink.classList.add("following-header-username");
+strongTag.appendChild(userLink);
+
+// Append comment body
+pTag.innerHTML +=
+  ' <%= @comment.body.length > 50 ? "#{@comment.body[0..119]}..." : @comment.body %>';

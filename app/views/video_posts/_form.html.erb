@@ -1,0 +1,30 @@
+<div>
+  <% if @video_post.errors.any? %>
+    <div id="post-form-error-container">
+      <p id="post-form-flash-danger"><%= flash[:danger] %></p>
+      <ul id="post-form-error-ul">
+        <% @video_post.errors.full_messages.each do |msg| %>
+          <li class="post-form-error-list-item"><span><%= msg %></span></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+
+  <%= form_with model: @video_post, local: true do |f| %>
+    <% if @video_post.clip.attached? && @video_post.clip.content_type.in?(%(video/mp4)) %>
+      <div class="video-container">
+        <%= video_tag url_for(@video_post.clip), controls: "", class: "post-edit-video" %>
+      </div>
+    <% end %>
+
+    <div>
+      <%= f.file_field :clip, id: "primary-file-input" %>
+      <p id="choose-file" class="post-new-choose-image">Choose Video...</p>
+    </div>
+
+    <%= f.text_area :caption, placeholder: "Write a caption...", id: "post-new-text-area" %>
+
+    <%= f.submit "Share", id: "new-post-submit-btn" %>
+  <% end %>
+</div>

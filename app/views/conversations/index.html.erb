@@ -1,0 +1,103 @@
+<% cnd1 = current_user.sender_conversations.count === 0 && current_user.receiver_conversations.count === 0 %>
+
+<%
+  has_empty_messages = true
+  empty_count = 0
+
+  current_user.sender_conversations.each do |convo|
+    if convo.messages.count === 0
+      empty_count += 1
+    end
+  end
+
+  if current_user.sender_conversations.count === empty_count
+    has_empty_messages = true
+  else
+    has_empty_messages = false    
+  end
+%>
+
+<%
+  has_empty_messages2 = true
+  empty_count2 = 0
+
+  current_user.receiver_conversations.each do |convo|
+    if convo.messages.count === 0
+      empty_count2 += 1
+    end
+  end
+
+  if current_user.receiver_conversations.count === empty_count2
+    has_empty_messages2 = true
+  else
+    has_empty_messages2 = false    
+  end
+%>
+
+<% if cnd1 || has_empty_messages && has_empty_messages2 %>
+  <div id="empty-conversations-div">
+    <i class="far fa-paper-plane no-convo-icon"></i>
+    <p id="no-convo-text-1">Your Messages</p>
+    <p id="no-convo-text-2">Send private messages to friends.</p>
+  </div>
+<% else %>
+
+  <div id="conversations-container">
+
+    <% @conversations[0, 14].each do |conversation| %>
+      <% next if conversation.messages.count === 0 %>
+
+      <% if conversation.sender_id === current_user.id || conversation.recipient_id === current_user.id %>
+
+        <% if conversation.sender_id === current_user.id %>
+          <% recipient = User.find(conversation.recipient_id) %>
+        <% else %>
+          <% recipient = User.find(conversation.sender_id) %>
+        <% end %>
+        
+        <div class="convo-div">
+
+          <div class="convo-avatar-div" onclick="location.href='<%= conversation_messages_path(conversation) %>'">
+            <% if recipient.avatar.attached? %> 
+              <div class="convo-index-avatar background-image" style="background-image: url('<%= url_for(recipient.avatar) %>');"></div>
+            <% else %>
+              <div class="convo-index-avatar background-image" style="background-image: url('<%= "/assets/default_profile.jpg" %>');"></div>
+            <% end %>
+          </div>
+
+
+          <div class="conversation-text-div" onclick="location.href='<%= conversation_messages_path(conversation) %>'">
+
+            <p class="conversation-text">
+              <%= recipient.username %>
+            </p>
+
+            <div>
+              <% message_user = User.find(conversation.messages.last.user_id) %>
+              <% last_message = conversation.messages.last.body %>
+
+              <p class="conversation-text conversation-message-last">
+                <%= current_user === message_user ? "" : message_user.username + " " %>
+                <%= last_message.length > 35 ? "#{last_message[0..35]}..." : last_message %> 
+                <%= "· #{time_ago_in_words(conversation.messages.last.created_at.localtime)} ago" %>
+              </p>
+            </div>
+          </div>
+
+          <%= link_to conversation, method: :delete, data: { confirm: 'Are you sure?' } do %>
+            <i class="far fa-trash-alt conversation-del-link"></i>
+          <% end %>
+        </div>
+
+      <% end %>
+    <% end %>
+  </div>
+
+  <% if @conversations.length > 14 %>
+    <%= link_to "More posts...", more_conversations_path(next: 14), method: :post, remote: true, id: "more-link", class: "bottom-links" %>
+
+    <button id="top-link" class="bottom-links">Back to top</button>
+  <% end %>
+  
+<% end %>
+

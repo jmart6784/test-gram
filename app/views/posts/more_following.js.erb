@@ -1,0 +1,461 @@
+var moreLink = document.getElementById("more-link");
+
+<% if @sorted_feed.length === 0 %>
+  // Back to top link when there are no more posts to show
+  moreLink.style.display = "none";
+  document.getElementById("top-link").style.display = "block";
+<% else %>
+  // Make href request for next 10 posts
+  moreLink.href = `/more_following_posts/0?next=${"<%= @next_start_point %>"}"}`;
+<% end %>
+
+var parentDiv = document.getElementById("following-mid-container");
+
+<% @sorted_feed.each do |post| %>
+  // Sort comments by likes
+  <%
+    all_comments = post.comments 
+
+    temp_ary = []
+    comments = []
+
+    all_comments.each do |comment|
+      temp_ary << { likes: comment.likes.count, com_obj: comment }
+    end
+
+    temp_ary = (temp_ary.sort_by { |x| x[:likes] }).reverse!
+
+    temp_ary.each do |obj|
+      comments << obj[:com_obj]
+    end
+  %>
+
+  <% user = User.find(post.user_id) %>
+
+  // Create post container
+  var postContainer = document.createElement("div");
+  postContainer.id = "following-post-container";
+  parentDiv.appendChild(postContainer);
+
+  // Create user info div
+  var userInfoDiv = document.createElement("div");
+  userInfoDiv.id = "following-user-info-div";
+  postContainer.appendChild(userInfoDiv);
+
+  // Create User avatar div
+  var userAvatarDiv = document.createElement("div"); 
+  userAvatarDiv.classList.add("following-avatar");
+  userAvatarDiv.classList.add("background-image");
+
+  <% if user.avatar.attached? %>
+    userAvatarDiv.style.backgroundImage = "url(<%= url_for(user.avatar) %>)";
+  <% else %>
+    userAvatarDiv.style.backgroundImage = "url(/assets/default_profile.jpg)";
+  <% end %>
+
+  userInfoDiv.appendChild(userAvatarDiv);
+
+  // Create user name p tag
+  var usernameP = document.createElement("p");
+  userInfoDiv.appendChild(usernameP);
+
+  // Create username link
+  var usernameA = document.createElement("a");
+  usernameA.textContent = "<%= user.username %>";
+  usernameA.href = "<%= url_for(user) %>";
+  usernameA.classList.add("following-header-username");
+  usernameA.classList.add("following-un-size");
+  usernameP.appendChild(usernameA);
+
+  // Create post image or video
+  <% if post.class.method_defined? :image %>
+    var mediaDiv = document.createElement("div");
+    postContainer.appendChild(mediaDiv);
+
+    var imageDiv = document.createElement("div");
+    imageDiv.classList.add("following-feed-image");
+    imageDiv.classList.add("background-image");
+    imageDiv.style.backgroundImage = "url(<%= url_for(post.image) %>)";
+    mediaDiv.appendChild(imageDiv);
+  <% elsif post.class.method_defined? :clip %>
+    var videoContainer = document.createElement("div");
+    videoContainer.classList.add("video-container");
+    postContainer.appendChild(videoContainer);
+
+    var postVideo = document.createElement("video");
+    postVideo.setAttribute("controls", "controls");
+    postVideo.classList.add("following-feed-video");
+    postVideo.setAttribute("src", "<%= url_for(post.clip) %>");
+    postContainer.appendChild(postVideo);
+  <% end %>
+
+  // Create activity options div
+  var activityOptionsDiv = document.createElement("div");
+  activityOptionsDiv.classList.add("following-activity-options");
+  activityOptionsDiv.classList.add("following-pad");
+  postContainer.appendChild(activityOptionsDiv);
+
+  // Create div for like and comments
+  var lcDiv = document.createElement("div");
+  lcDiv.classList.add("following-activity-lc");
+  activityOptionsDiv.appendChild(lcDiv);
+
+  <% if post.class.method_defined? :image %>
+
+    <% like_exists = Like.where(post_id: post.id, user_id: current_user.id) == [] ? ["far", "fa-heart"] : ["fas", "fa-heart", "like-icon-col"] %>
+
+    // Create post type image like link
+    var imageLike = document.createElement("a");
+    imageLike.href = "<%= ajax_likes_update_like_path(id: post.id, type: "post", html_id: "likeable_id_#{post.id}", html_count_id: "like_count#{post.id}") %>"
+    imageLike.setAttribute("data-remote", "true");
+    imageLike.setAttribute("data-method", "put");
+    imageLike.classList.add("following-like-link");
+    imageLike.classList.add("foll-activity-link");
+    lcDiv.appendChild(imageLike);
+
+    // Create like icon
+    var imageLikeIcon = document.createElement("i");
+    imageLikeIcon.id = "<%= "likeable_id_#{post.id}" %>";
+
+    <% like_exists.each do |html_class| %>
+      imageLikeIcon.classList.add("<%= raw html_class %>");
+    <% end %>
+
+    imageLike.appendChild(imageLikeIcon);
+
+  <% elsif post.class.method_defined? :clip %>
+
+    <% like_exists = Like.where(video_post_id: post.id, user_id: current_user.id) == [] ? ["far", "fa-heart"] : ["fas", "fa-heart", "like-icon-col"] %>
+
+    // Create post type video like link
+    var videoLike = document.createElement("a");
+    videoLike.href = "<%= ajax_likes_update_like_path(id: post.id, type: "video post", html_id: "video_likeable_id_#{post.id}", html_count_id: "video_like_count#{post.id}") %>"
+    videoLike.setAttribute("data-remote", "true");
+    videoLike.setAttribute("data-method", "put");
+    videoLike.classList.add("following-like-link");
+    videoLike.classList.add("foll-activity-link");
+    lcDiv.appendChild(videoLike);
+
+    // Create like icon
+    var videoLikeIcon = document.createElement("i");
+    videoLikeIcon.id = "<%= "video_likeable_id_#{post.id}" %>";
+
+    <% like_exists.each do |html_class| %>
+      videoLikeIcon.classList.add("<%= raw html_class %>");
+    <% end %>
+
+    videoLike.appendChild(videoLikeIcon);
+  <% end %>
+
+  // Create comment link to show post
+  var commentLink = document.createElement("a");
+  commentLink.href = "<%= url_for(post) %>";
+  lcDiv.appendChild(commentLink);
+
+  // Create link for comment link
+  var commentIcon = document.createElement("i");
+  commentIcon.classList.add("far");
+  commentIcon.classList.add("fa-comment");
+  commentIcon.classList.add("foll-activity-link");
+  commentLink.appendChild(commentIcon);
+
+  // Link to save video or image post
+  <% unless current_user === user %>
+    <% if post.class.method_defined? :image %>
+      var saveImageLink = document.createElement("a");
+      saveImageLink.href = "<%= ajax_saved_posts_saved_post_path(user_id: current_user.id, id: post.id, type: "image", html_id: "saveable_post_id_#{post.id}") %>";
+      saveImageLink.setAttribute("data-remote", "true");
+      saveImageLink.setAttribute("data-method", "put");
+      saveImageLink.classList.add("foll-activity-link");
+      activityOptionsDiv.appendChild(saveImageLink);
+
+      // Create icon
+      var imageSaveIcon = document.createElement("i");
+      imageSaveIcon.id = "<%= "saveable_post_id_#{post.id}" %>";
+
+      <% if SavedPost.where(user_id: current_user.id, post_id: post.id) === [] %>
+        imageSaveIcon.classList.add("far");
+      <% else %>
+        imageSaveIcon.classList.add("fas");
+      <% end %>
+
+      imageSaveIcon.classList.add("fa-bookmark");
+      saveImageLink.appendChild(imageSaveIcon);
+    <% elsif post.class.method_defined? :clip %>
+      var saveVideoLink = document.createElement("a");
+      saveVideoLink.href = "<%= ajax_saved_posts_saved_post_path(user_id: current_user.id, id: post.id, type: "video", html_id: "saveable_video_post_id_#{post.id}") %>";
+      saveVideoLink.setAttribute("data-remote", "true");
+      saveVideoLink.setAttribute("data-method", "put");
+      saveVideoLink.classList.add("foll-activity-link");
+      activityOptionsDiv.appendChild(saveVideoLink);
+
+      // Create icon
+      var videoSaveIcon = document.createElement("i");
+      videoSaveIcon.id = "<%= "saveable_video_post_id_#{post.id}" %>";
+
+      <% if SavedPost.where(user_id: current_user.id, video_post_id: post.id) === [] %>
+        videoSaveIcon.classList.add("far");
+      <% else %>
+        videoSaveIcon.classList.add("fas");
+      <% end %>
+
+      videoSaveIcon.classList.add("fa-bookmark");
+      saveVideoLink.appendChild(videoSaveIcon);
+    <% end %>
+  <% else %>
+    var blankDiv = document.createElement("div");
+    activityOptionsDiv.appendChild(blankDiv);
+  <% end %>
+
+  // Create like count div
+  var countDiv = document.createElement("div");
+  countDiv.classList.add("following-pad");
+  postContainer.appendChild(countDiv);
+
+  // Create like count for posts with type image or video
+  <% if post.class.method_defined? :image %>
+    var imageLikeCount = document.createElement("h3");
+    imageLikeCount.id = "<%= "like_count#{post.id}" %>";
+    imageLikeCount.classList.add("following-like-count");
+    imageLikeCount.textContent = "<%= "#{post.likes.count} like".pluralize(post.likes.count) %>";
+    countDiv.appendChild(imageLikeCount);
+  <% elsif post.class.method_defined? :clip %>
+    var videoLikeCount = document.createElement("h3");
+    videoLikeCount.id = "<%= "video_like_count#{post.id}" %>";
+    videoLikeCount.classList.add("following-like-count");
+    videoLikeCount.textContent = "<%= "#{post.likes.count} like".pluralize(post.likes.count) %>";
+    countDiv.appendChild(videoLikeCount);
+  <% end %>
+
+  // Create div for caption
+  var captionDiv = document.createElement("div");
+  captionDiv.classList.add("following-pad");
+  postContainer.appendChild(captionDiv);
+
+  <% unless post.caption === "" %>
+    var captionP = document.createElement("p");
+    captionP.classList.add("following-base-fsize");
+    captionP.classList.add("following-word-wrap");
+
+    // Create Strong Tag for username
+    var strongUn = document.createElement("strong");
+    captionP.appendChild(strongUn);
+
+    // Create Username link
+    var linkUn = document.createElement("a");
+    linkUn.textContent = "<%= user.username %> ";
+    linkUn.href = "<%= url_for(user) %>";
+    linkUn.classList.add("following-header-username");
+    strongUn.appendChild(linkUn);
+
+    // If caption is longer than 150 characters implement the hide/show feature
+    <% if post.caption.length > 150 %>
+
+      // Create first portion of long caption
+      var beginingCaption = document.createElement("span");
+      beginingCaption.textContent = "<%= post.caption[0..150] %>";
+      captionP.appendChild(beginingCaption);
+
+      // Create show more span
+      var captionMore = document.createElement("span");
+      captionMore.classList.add("show-more");
+      captionMore.textContent = "Show More...";
+      captionP.appendChild(captionMore);
+
+      // Create span with the rest of the content
+      var remainingCaption = document.createElement("span");
+      remainingCaption.classList.add("more-content");
+      remainingCaption.textContent = "<%= post.caption[150..post.caption.length] %>";
+      captionP.appendChild(remainingCaption);
+
+      // Create show less toggle span
+      var captionLess = document.createElement("span");
+      captionLess.classList.add("show-less");
+      captionLess.textContent = "...Show Less";
+      captionP.appendChild(captionLess);
+
+      // Event listeners to show more/less feature
+      captionMore.addEventListener("click", () => {
+        captionMore.style.display = "none";
+        remainingCaption.style.display = "inline";
+        captionLess.style.display = "inline";
+      });
+
+      captionLess.addEventListener("click", () => {
+        captionMore.style.display = "inline";
+        remainingCaption.style.display = "none";
+        captionLess.style.display = "none";
+      });
+    <% else %>
+      // Create caption
+      var shortCaption = document.createElement("span");
+      shortCaption.textContent = "<%= post.caption %>";
+      captionP.appendChild(shortCaption);
+    <% end %>
+
+    captionDiv.appendChild(captionP);
+
+  <% end %>
+
+  // Change html id's depending on post type (image/video)
+  <% if post.class.method_defined? :image %>
+    <% com_div_id = "image-comment-div-#{post.id}" %>
+    <% com_input_id = "image-feed-text-field-#{post.id}" %>
+  <% elsif post.class.method_defined? :clip %>
+    <% com_div_id = "video-comment-div-#{post.id}" %>
+    <% com_input_id = "video-feed-text-field-#{post.id}" %>
+  <% end %>
+
+  // Create div for comments
+  var commentsDiv = document.createElement("div");
+  commentsDiv.id = "<%= com_div_id %>";
+  postContainer.appendChild(commentsDiv);
+
+  <% unless post.comments.count === 0 %>
+    // Create link to post show
+    var allCommentsLink = document.createElement("a");
+    allCommentsLink.href = "<%= url_for(post) %>";
+    allCommentsLink.classList.add("following-pad");
+    allCommentsLink.classList.add("following-base-fsize");
+    allCommentsLink.classList.add("following-gray-txt");
+    allCommentsLink.textContent = "<%= "View all #{post.comments.count} " + "comment".pluralize(post.comments.count) %>";
+    commentsDiv.appendChild(allCommentsLink);
+
+    // Get first 3 most liked comments
+    <% comments.slice(0, 3).each do |comment| %>
+      <% user_com = User.find(comment.user_id) %>
+
+      // Create comment p tag
+      var commentP = document.createElement("p");
+      commentP.classList.add("following-word-wrap");
+      commentP.classList.add("following-pad");
+      commentP.classList.add("following-base-fsize");
+      commentsDiv.appendChild(commentP);
+
+      // Create comment strong tag for username
+      commentStrong = document.createElement("strong");
+      commentP.appendChild(commentStrong);
+
+      // Create username link for comment
+      commentUn = document.createElement("a");
+      commentUn.textContent = "<%= user_com.username %> ";
+      commentUn.href = "<%= url_for(user_com) %>";
+      commentUn.classList.add("following-header-username");
+      commentStrong.appendChild(commentUn);
+
+      <% if comment.body.length > 150 %>
+        // Create first part of a long comment
+        var beginingComment = document.createElement("span");
+        beginingComment.textContent = "<%= comment.body[0..150] %>";
+        commentP.appendChild(beginingComment);
+
+        // Create show more span
+        var moreComment = document.createElement("span");
+        moreComment.classList.add("show-more");
+        moreComment.textContent = "...Show More";
+        commentP.appendChild(moreComment);
+
+        // Create the rest of the long caption
+        var restOfComment = document.createElement("span");
+        restOfComment.textContent = "<%= comment.body[150..comment.body.length] %>";
+        restOfComment.classList.add("more-content");
+        commentP.appendChild(restOfComment);
+
+        // Create show less toggle
+        var lessComment = document.createElement("span");
+        lessComment.classList.add("show-less");
+        lessComment.textContent = "...Shoe Less"
+        commentP.appendChild(lessComment);
+
+        lessComment.addEventListener("click", () => {
+          lessComment.style.display = "none";
+          restOfComment.style.display = "none";
+          moreComment.style.display = "inline";
+        });
+
+        moreComment.addEventListener("click", () => {
+          moreComment.style.display = "none";
+          restOfComment.style.display = "inline";
+          lessComment.style.display = "inline";
+        });
+      <% else %>
+        // Create short comment < 150
+        var shortComment = document.createElement("span");
+        shortComment.textContent = "<%= comment.body %>";
+        commentP.appendChild(shortComment);
+      <% end %>
+
+    <% end %>
+  <% end %>
+
+  // Create div for post date
+  var postDateDiv = document.createElement("div");
+  postDateDiv.classList.add("following-pad");
+  postDateDiv.classList.add("following-pdate");
+  postDateDiv.classList.add("following-gray-txt");
+  postDateDiv.textContent = "<%= "#{time_ago_in_words(post.created_at.localtime)} ago" %>";
+  postContainer.appendChild(postDateDiv);
+
+  <% if post.class.method_defined? :image %>
+    // Create comment form 
+    var imageCommentForm = document.createElement("form");
+    imageCommentForm.classList.add("following-feed-comment-form");
+    imageCommentForm.setAttribute("data-remote", "true");
+    imageCommentForm.setAttribute("method", "post");
+    imageCommentForm.setAttribute("accept-charset", "UTF-8");
+    imageCommentForm.setAttribute("action", "<%= raw "/posts/#{post.id}/comments/0/ajax_feed_comment?html_id=image-comment-div-#{post.id}&html_input=image-feed-text-field-#{post.id}&type=image&video_post_id=0" %>");
+    postContainer.appendChild(imageCommentForm);
+
+    // Create text field
+    var imageCommentInput = document.createElement("input");
+    imageCommentInput.classList.add("following-comment-input");
+    imageCommentInput.id = "<%= com_input_id %>";
+    imageCommentInput.setAttribute("placeholder", "Add a comment...");
+    imageCommentInput.setAttribute("required", "required");
+    imageCommentInput.setAttribute("maxlength", "2200");
+    imageCommentInput.setAttribute("size", "2200");
+    imageCommentInput.setAttribute("type", "text");
+    imageCommentInput.setAttribute("name", "comment[body]");
+    imageCommentForm.appendChild(imageCommentInput);
+
+    // Create submit button
+    var imageCommentSubmit = document.createElement("input");
+    imageCommentSubmit.setAttribute("type", "submit");
+    imageCommentSubmit.setAttribute("name", "commit");
+    imageCommentSubmit.setAttribute("value", "Post");
+    imageCommentSubmit.setAttribute("data-disable-with", "Post");
+    imageCommentSubmit.classList.add("following-form-comment-submit");
+    imageCommentForm.appendChild(imageCommentSubmit);
+  <% elsif post.class.method_defined? :clip %>
+    // Create comment form 
+    var videoCommentForm = document.createElement("form");
+    videoCommentForm.classList.add("following-feed-comment-form");
+    videoCommentForm.setAttribute("data-remote", "true");
+    videoCommentForm.setAttribute("method", "post");
+    videoCommentForm.setAttribute("accept-charset", "UTF-8");
+    videoCommentForm.setAttribute("action", "<%= raw "/posts/0/comments/0/ajax_feed_comment?html_id=video-comment-div-#{post.id}&html_input=video-feed-text-field-#{post.id}&type=video&video_post_id=#{post.id}" %>");
+    postContainer.appendChild(videoCommentForm);
+
+    // Create text field
+    var videoCommentInput = document.createElement("input");
+    videoCommentInput.classList.add("following-comment-input");
+    videoCommentInput.id = "<%= com_input_id %>";
+    videoCommentInput.setAttribute("placeholder", "Add a comment...");
+    videoCommentInput.setAttribute("required", "required");
+    videoCommentInput.setAttribute("maxlength", "2200");
+    videoCommentInput.setAttribute("size", "2200");
+    videoCommentInput.setAttribute("type", "text");
+    videoCommentInput.setAttribute("name", "comment[body]");
+    videoCommentForm.appendChild(videoCommentInput);
+
+    // Create submit button
+    var videoCommentSubmit = document.createElement("input");
+    videoCommentSubmit.setAttribute("type", "submit");
+    videoCommentSubmit.setAttribute("name", "commit");
+    videoCommentSubmit.setAttribute("value", "Post");
+    videoCommentSubmit.setAttribute("data-disable-with", "Post");
+    videoCommentSubmit.classList.add("following-form-comment-submit");
+    videoCommentForm.appendChild(videoCommentSubmit);
+  <% end %>
+
+<% end %>

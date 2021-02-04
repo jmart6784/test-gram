@@ -1,0 +1,220 @@
+#user-index-container {
+  max-width: 930px;
+  width: 50%;
+  margin: auto;
+  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 20px;
+  background-color: black;
+  padding: 10px;
+}
+
+#user-index-form {
+  display: none;
+}
+
+.user-index-user-container {
+  padding: 10px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.user-index-ava-un-div {
+  flex: 10;
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
+  cursor: pointer;
+}
+
+.user-index-avatar {
+  height: 40px;
+  width: 40px;
+  min-width: 40px;
+  border-radius: 100%;
+}
+
+.user-index-username {
+  font-size: 15px;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.user-index-username:hover {
+  text-decoration: underline;
+}
+
+.user-index-fullname {
+  font-size: 15px;
+  color: rgb(170, 170, 170);
+  text-size-adjust: none;
+  width: 550px;
+  word-wrap: break-word;
+}
+
+.user-index-follow-link {
+  flex: 1;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  background-color: #00568f;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 15px;
+  text-size-adjust: none;
+}
+
+// No search results view
+#ui-no-result-div {
+  height: 80vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+#ui-no-results-center-div {
+  width: 50%;
+}
+
+#ui-no-result {
+  font-size: 30px;
+  text-size-adjust: none;
+  width: 100%;
+  color: rgb(136, 136, 136);
+  word-wrap: break-word;
+  margin-top: 50px;
+}
+
+@media only screen and (max-width: 1700px) {
+  #user-index-container, #ui-no-results-center-div {
+    width: 55%;
+  }
+}
+
+@media only screen and (max-width: 1600px) {
+  #user-index-container, #ui-no-results-center-div {
+    width: 60%;
+  }
+}
+
+@media only screen and (max-width: 1500px) {
+  #user-index-container, #ui-no-results-center-div {
+    width: 65%;
+  }
+}
+
+@media only screen and (max-width: 1400px) {
+  #user-index-container, #ui-no-results-center-div {
+    width: 70%;
+  }
+}
+
+@media only screen and (max-width: 1300px) {
+  #user-index-container, #ui-no-results-center-div {
+    width: 75%;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  #user-index-container, #ui-no-results-center-div {
+    width: 80%;
+  }
+}
+
+@media only screen and (max-width: 1100px) {
+  #user-index-container, #ui-no-results-center-div {
+    width: 85%;
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  #user-index-container {
+    width: 100%;
+    margin-top: 150px;
+    row-gap: 40px;
+    padding: 20px;
+  }
+
+  #user-index-form {
+    height: 90px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #user-index-search {
+    height: 100%;
+    flex: 10;
+    background-color: black;
+    color: white;
+    padding: 20px 0 20px 20px;
+    outline: none;
+    font-size: 40px;
+    text-size-adjust: none;
+    border-top: 3px solid white;
+    border-bottom: 3px solid white;
+    border-left: 3px solid white;
+    border-right: 0px;
+  }
+
+  #user-index-search-btn {
+    flex: 2;
+    height: 100%;
+    background-color: black;
+    color: white;
+    font-size: 40px;
+    text-size-adjust: none;
+    padding: 10px 0 10px 0;
+    outline: none;
+    border-top: 3px solid white;
+    border-bottom: 3px solid white;
+    border-right: 3px solid white;
+    border-left: 0px;
+  }
+  
+  .user-index-user-container {
+    padding: 20px;
+  }
+  
+  .user-index-ava-un-div {
+    column-gap: 25px;
+  }
+  
+  .user-index-avatar {
+    height: 80px;
+    width: 80px;
+  }
+  
+  .user-index-username {
+    font-size: 30px;
+    text-size-adjust: none;
+  }
+  
+  .user-index-fullname {
+    font-size: 30px;
+    text-size-adjust: none;
+    word-wrap: break-word;
+    width: 550px;
+  }
+  
+  .user-index-follow-link {
+    padding: 10px;
+    font-size: 35px;
+    text-size-adjust: none;
+  }
+
+  #ui-no-results-center-div {
+    width: 95%;
+  }
+
+  #ui-no-result {
+    font-size: 50px;
+    margin-top: 100px;
+  }
+}

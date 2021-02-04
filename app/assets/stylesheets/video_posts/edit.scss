@@ -1,0 +1,15 @@
+.post-edit-video {
+  height: 300px;
+  max-width: 100%;
+  display: block;
+  object-fit: cover;
+  margin-top: 10px;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+@media only screen and (max-width: 1000px) {
+  .post-edit-video {
+    height: 700px;
+  }
+}
