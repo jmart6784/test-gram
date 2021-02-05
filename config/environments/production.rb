@@ -3,26 +3,16 @@ Rails.application.configure do
 
   # Sendgrid
   config.action_mailer.default_url_options = { :host => 'instagram-test-aws.herokuapp.com' }
-  # config.action_mailer.delivery_method = :smtp
-  # config.action_mailer.perform_deliveries = true
-  # config.action_mailer.smtp_settings = {
-  #   :user_name => Rails.application.credentials.dig(:sendgrid, :username),
-  #   :password => Rails.application.credentials.dig(:sendgrid, :password),
-  #   :domain => "instagram-test-aws.herokuapp.com",
-  #   :address => 'smtp.sendgrid.net',
-  #   :port => 587,
-  #   :authentication => :plain,
-  #   :enable_starttls_auto => true
-  # }
-
-  ActionMailer::Base.smtp_settings = {
-    :address => 'smtp.sendgrid.net', 
-    :port => '587', 
-    :authentication => :plain, 
-    :user_name => Rails.application.credentials.dig(:sendgrid, :username), 
-    :password => Rails.application.credentials.dig(:sendgrid, :password), 
-    :domain => 'heroku.com', 
-    :enable_starttls_auto => true 
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.smtp_settings = {
+    :user_name => Rails.application.credentials.dig(:sendgrid, :username),
+    :password => Rails.application.credentials.dig(:sendgrid, :password),
+    :domain => "instagram-test-aws.herokuapp.com",
+    :address => 'smtp.sendgrid.net',
+    :port => 587,
+    :authentication => :plain,
+    :enable_starttls_auto => true
   }
 
   # Code is not reloaded between requests.
