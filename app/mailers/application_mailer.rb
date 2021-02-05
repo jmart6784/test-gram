@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: 'instagram@example.com'
+  default from: 'support@instagram-test-aws.herokuapp.com'
   layout 'mailer'
 end
